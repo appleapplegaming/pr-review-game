@@ -1,6 +1,6 @@
 # Ship It
 
-A browser co-op PR review game. Players share one quarter of a fictional company: they review pull requests, catch bugs, and keep the company solvent.
+A browser co-op PR review game. Players share one quarter of a fictional company: they review pull requests, catch bugs, and keep the company from going bankrupt.
 
 ## Run locally
 
