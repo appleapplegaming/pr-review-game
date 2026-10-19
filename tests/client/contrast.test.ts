@@ -68,3 +68,20 @@ describe('colour tokens meet WCAG AA in both themes', () => {
     expect(css.postmortem).not.toMatch(/color:\s*#ffffff/i);
   });
 });
+
+describe('dark theme tokens', () => {
+  it('match between the media query block and the data-theme block', () => {
+    // Plain CSS cannot share one dark block between the two selectors, so guard against drift.
+    const block = (open: string) => {
+      const start = css.global.indexOf(open);
+      const body = css.global.slice(css.global.indexOf('{', start) + 1);
+      return body.slice(0, body.indexOf('}'));
+    };
+    const tokens = (b: string) =>
+      [...b.matchAll(/--[\w-]+:\s*#[0-9a-fA-F]{6}\s*;/g)].map((m) => m[0].replace(/\s+/g, ''));
+    const media = tokens(block(":root:not([data-theme='light'])"));
+    const attr = tokens(block(":root[data-theme='dark']"));
+    expect(media.length).toBeGreaterThan(0);
+    expect(attr).toEqual(media);
+  });
+});

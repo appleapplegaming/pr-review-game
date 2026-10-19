@@ -17,8 +17,8 @@ export const CONN_COPY: Record<ConnState, ConnCopy> = {
   open: { label: 'Connected', detail: null, canRetry: false },
   reconnecting: {
     label: 'Reconnecting…',
-    detail: 'Connection dropped. Reconnecting automatically…',
-    canRetry: false,
+    detail: 'Connection dropped. Reconnecting automatically, or retry now.',
+    canRetry: true,
   },
   closed: {
     label: 'Lost connection',
