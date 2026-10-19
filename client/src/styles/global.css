@@ -1,0 +1,46 @@
+/* Design tokens and page base. Components read these tokens; they do not hard-code colours. */
+:root {
+  color-scheme: light dark;
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-text: #1a1d23;
+  --color-muted: #5b6372;
+  --color-accent: #2b5fd9;
+  --space-2: 0.5rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --radius: 0.5rem;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-bg: #14161b;
+    --color-surface: #1d2028;
+    --color-text: #eceef2;
+    --color-muted: #9aa3b2;
+    --color-accent: #7ea6ff;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #14161b;
+  --color-surface: #1d2028;
+  --color-text: #eceef2;
+  --color-muted: #9aa3b2;
+  --color-accent: #7ea6ff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+}

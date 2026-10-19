@@ -297,13 +297,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Set up Vite and Preact using CSS modules. Write a socket client that reconnects with backoff and sends `join` with the `playerId` stored in `sessionStorage`. The clock offset comes from `welcome.serverNow`. A small store keeps the latest `state`, an event queue and the `postmortem`. `npm run dev` proxies `/ws` to the server.
 
 **Acceptance criteria:**
-- [ ] `serverTime()` returns `Date.now()` plus the offset. A unit test covers how the offset is calculated.
-- [ ] When the socket drops, the client reconnects and sends `join` with the stored `playerId`.
-- [ ] `npm run dev` serves the client on 5173 with a working WebSocket connection to 3000.
+- [x] `serverTime()` returns `Date.now()` plus the offset. A unit test covers how the offset is calculated.
+- [x] When the socket drops, the client reconnects and sends `join` with the stored `playerId`.
+- [x] `npm run dev` serves the client on 5173 with a working WebSocket connection to 3000.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/client/net.test.ts`
-- [ ] Build succeeds: `npm run build`
+- [x] Tests pass: `npx vitest run tests/client/net.test.ts`
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Task 12
 

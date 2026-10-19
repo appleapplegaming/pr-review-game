@@ -55,4 +55,9 @@ export const config = {
   // Client
   toastMs: 4000,
   roomCodeLength: 4,
+  reconnectBaseMs: 500, // first retry ceiling after a drop; doubles per failed attempt
+  reconnectMaxMs: 15_000, // cap on the retry ceiling
+  reconnectFactor: 2, // ceiling growth per failed attempt
+  reconnectJitter: 0.5, // delay is drawn from [ceiling × (1 − jitter), ceiling]
+  eventQueueMax: 20, // oldest toasts drop off once the queue is longer than this
 } as const;

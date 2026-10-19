@@ -1,0 +1,17 @@
+.shell {
+  min-height: 100vh;
+  padding: var(--space-6) var(--space-4);
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.status {
+  margin: 0;
+  color: var(--color-muted);
+}
