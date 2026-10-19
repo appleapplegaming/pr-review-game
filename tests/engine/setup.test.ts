@@ -56,6 +56,41 @@ function setupFor(players: number, seed: number, pool = fullPool()): Quarter {
   return createQuarter(pool, players, createRng(seed), NOW);
 }
 
+describe('game length', () => {
+  const half = config.quarterMs / 2;
+
+  it('scales the quarter and the spawn window with the chosen length, but not the PR timer', () => {
+    const base = defaultTiming();
+    const state: GameState = {
+      code: 'KZQX',
+      companyName: 'Acme',
+      hostId: 'p1',
+      players: [{ id: 'p1', name: 'Sara', joinedAt: NOW, connected: true }],
+      phase: 'lobby',
+      quarter: null,
+    };
+    const started = startQuarter(state, fullPool(), createRng(1), NOW, base, 5);
+    const quarter = started.quarter;
+    if (quarter === null) throw new Error('no quarter');
+    expect(quarter.endsAt - quarter.startedAt).toBe(half);
+    expect(quarter.timing.spawnWindowMs).toBe(base.spawnWindowMs / 2);
+    expect(quarter.timing.prTimerMs).toBe(base.prTimerMs);
+    const last = quarter.upcoming[quarter.upcoming.length - 1];
+    expect(last && last.spawnAt - NOW).toBeLessThanOrEqual(quarter.timing.spawnWindowMs);
+  });
+
+  it('draws fewer PRs for a shorter game and more for a longer one, within 6 and the cap', () => {
+    const count = (players: number, minutes: number) => {
+      const q = createQuarter(fullPool(), players, createRng(1), NOW, defaultTiming(), minutes);
+      return q.upcoming.length;
+    };
+    expect(count(5, 5)).toBeLessThan(count(5, 10));
+    expect(count(2, 15)).toBeGreaterThan(count(2, 10));
+    expect(count(1, 5)).toBeGreaterThanOrEqual(6);
+    expect(count(8, 15)).toBe(config.prCount.max);
+  });
+});
+
 describe('createQuarter: PR count', () => {
   it.each([
     [1, 12],

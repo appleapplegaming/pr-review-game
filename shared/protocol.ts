@@ -4,7 +4,7 @@ import type { BugType, ErrorCode, GameEvent, PublicRoomState, Postmortem } from 
 export type ClientMsg =
   | { t: 'create'; name: string }
   | { t: 'join'; code: string; name: string; playerId?: string } // playerId lets you rejoin after a reconnect
-  | { t: 'start' } // host only, from the lobby
+  | { t: 'start'; minutes?: number } // host only, from the lobby; minutes is the game length, default 10
   | { t: 'open'; prId: string } // presence only ("👀 Sara")
   | { t: 'merge'; prId: string }
   | { t: 'decline'; prId: string; bugType: BugType }

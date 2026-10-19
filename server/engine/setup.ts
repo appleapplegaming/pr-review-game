@@ -4,12 +4,26 @@
 import { BUG_TYPES, type PullRequest } from '../../shared/types';
 import { config } from '../../shared/config';
 import { shuffle, type Rng } from './rng';
-import { defaultTiming, type GameState, type Quarter, type Timing } from './state';
+import {
+  defaultTiming,
+  timingForMinutes,
+  type GameState,
+  type Quarter,
+  type Timing,
+} from './state';
 
-/** clamp(base + perPlayer × players, min, max). */
-export function prCountFor(playerCount: number): number {
+/**
+ * clamp(base + perPlayer × players, min, max), scaled by game length (minutes over the default) and
+ * kept within [prCountFloor, max], so a short game is not flooded and a long one has more to do.
+ */
+export function prCountFor(
+  playerCount: number,
+  minutes: number = config.durationMinutes.default,
+): number {
   const { base, perPlayer, min, max } = config.prCount;
-  return Math.min(max, Math.max(min, base + perPlayer * playerCount));
+  const standard = Math.min(max, Math.max(min, base + perPlayer * playerCount));
+  const scaled = Math.round((standard * minutes) / config.durationMinutes.default);
+  return Math.min(max, Math.max(config.prCountFloor, scaled));
 }
 
 /**
@@ -63,9 +77,11 @@ export function createQuarter(
   playerCount: number,
   rng: Rng,
   now: number,
-  timing: Timing = defaultTiming(),
+  baseTiming: Timing = defaultTiming(),
+  minutes: number = config.durationMinutes.default,
 ): Quarter {
-  const count = prCountFor(playerCount);
+  const timing = timingForMinutes(baseTiming, minutes);
+  const count = prCountFor(playerCount, minutes);
   const drawn = drawPrs(pool, count, rng);
   const upcoming = drawn.map((pr, i) => ({
     pr,
@@ -92,10 +108,11 @@ export function startQuarter(
   rng: Rng,
   now: number,
   timing?: Timing,
+  minutes?: number,
 ): GameState {
   return {
     ...state,
     phase: 'playing',
-    quarter: createQuarter(pool, state.players.length, rng, now, timing),
+    quarter: createQuarter(pool, state.players.length, rng, now, timing, minutes),
   };
 }

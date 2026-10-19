@@ -35,6 +35,19 @@ export function defaultTiming(): Timing {
   };
 }
 
+/**
+ * Timing for a game of `minutes`. The quarter and the spawn window scale with the length, relative
+ * to the default length; the per-PR timer, incident delay and ping cooldown stay as they are.
+ */
+export function timingForMinutes(timing: Timing, minutes: number): Timing {
+  const factor = minutes / config.durationMinutes.default;
+  return {
+    ...timing,
+    quarterMs: Math.round(timing.quarterMs * factor),
+    spawnWindowMs: Math.round(timing.spawnWindowMs * factor),
+  };
+}
+
 export interface ServerPlayer {
   id: string;
   name: string;

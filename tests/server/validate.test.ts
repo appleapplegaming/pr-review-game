@@ -17,6 +17,7 @@ describe('parseClientMessage', () => {
       { t: 'join', code: 'KZQX', name: 'Sara' },
       { t: 'join', code: 'KZQX', name: 'Sara', playerId: 'p-1' },
       { t: 'start' },
+      { t: 'start', minutes: 5 },
       { t: 'open', prId: 'pay-001' },
       { t: 'merge', prId: 'pay-001' },
       { t: 'decline', prId: 'pay-001', bugType: 'security' },
@@ -28,6 +29,15 @@ describe('parseClientMessage', () => {
     ];
     for (const msg of valid) {
       expect(parseClientMessage(JSON.stringify(msg)), JSON.stringify(msg)).toEqual(msg);
+    }
+  });
+
+  it('rejects a start with a game length that is not on offer', () => {
+    for (const minutes of [0, 7, -5, 5.5, '10', null]) {
+      expect(
+        parseClientMessage(JSON.stringify({ t: 'start', minutes })),
+        String(minutes),
+      ).toBeNull();
     }
   });
 

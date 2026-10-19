@@ -279,9 +279,11 @@ export function createWsHub(options: WsHubOptions): WsHub {
         joined(conn, rooms.join(msg.code, msg.name, msg.playerId));
         return;
       }
-      case 'start':
-        act(conn, (code, playerId) => rooms.start(code, playerId));
+      case 'start': {
+        const { minutes } = msg;
+        act(conn, (code, playerId) => rooms.start(code, playerId, minutes));
         return;
+      }
       case 'rename': {
         const { companyName } = msg;
         act(conn, (code, playerId) => rooms.rename(code, playerId, companyName));

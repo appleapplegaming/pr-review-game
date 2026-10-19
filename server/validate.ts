@@ -29,6 +29,11 @@ const companyNameSchema = text(config.companyName.min, config.companyName.max);
 const codeSchema = text(1, 16);
 const idSchema = text(1, 64);
 const commentSchema = text(config.comment.min, config.comment.max);
+const durationSchema = z
+  .number()
+  .refine((n) => (config.durationMinutes.options as readonly number[]).includes(n), {
+    message: 'must be one of the offered game lengths',
+  });
 const lineSchema = z.number().int().min(1).max(config.diffLines.max).nullable();
 
 /** Mirrors ClientMsg in shared/protocol.ts. A type test in tests/server/validate.test.ts checks they agree. */
@@ -40,7 +45,7 @@ export const clientMsgSchema = z.discriminatedUnion('t', [
     name: nameSchema,
     playerId: idSchema.optional(),
   }),
-  z.object({ t: z.literal('start') }),
+  z.object({ t: z.literal('start'), minutes: durationSchema.optional() }),
   z.object({ t: z.literal('open'), prId: idSchema }),
   z.object({ t: z.literal('merge'), prId: idSchema }),
   z.object({ t: z.literal('decline'), prId: idSchema, bugType: z.enum(BUG_TYPES) }),

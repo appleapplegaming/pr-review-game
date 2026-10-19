@@ -89,7 +89,8 @@ export interface Rooms {
   join(code: string, name: string, playerId?: string): JoinResult;
   /** Marks a player disconnected. Starts the 30-minute cleanup if nobody is left connected. */
   disconnect(code: string, playerId: string): void;
-  start(code: string, playerId: string): Acted;
+  /** `minutes` is the game length; omit it for the default. Must be one of config.durationMinutes.options. */
+  start(code: string, playerId: string, minutes?: number): Acted;
   rename(code: string, playerId: string, companyName: string): Acted;
   playAgain(code: string, playerId: string): Acted;
   intent(code: string, playerId: string, intent: Intent): Acted;
@@ -273,14 +274,18 @@ export function createRooms(options: RoomsOptions): Rooms {
     if (longestConnected(room.state.players) === undefined) scheduleCleanup(room);
   }
 
-  function start(rawCode: string, playerId: string): Acted {
+  function start(rawCode: string, playerId: string, minutes?: number): Acted {
     const seat = seated(rawCode, playerId);
     if (!('room' in seat)) return seat;
     const { room } = seat;
     const notHost = hostOnly(room, playerId);
     if (notHost !== null) return notHost;
     if (room.state.phase !== 'lobby') return fail('WRONG_PHASE', 'The quarter has already started');
-    room.state = startQuarter(room.state, pool, room.rng, clock.now(), timing);
+    const offered: readonly number[] = config.durationMinutes.options;
+    if (minutes !== undefined && !offered.includes(minutes)) {
+      return fail('INVALID_DURATION', `Game length must be ${offered.join(', ')} minutes`);
+    }
+    room.state = startQuarter(room.state, pool, room.rng, clock.now(), timing, minutes);
     return done(room);
   }
 

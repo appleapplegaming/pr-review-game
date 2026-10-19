@@ -328,6 +328,36 @@ describe('host-only actions and handover', () => {
     });
   });
 
+  it('plays the default length when the host does not pick one', () => {
+    const { rooms, clock } = setup();
+    const host = rooms.create('Sara');
+    if (!host.ok) throw new Error('create failed');
+    const started = rooms.start(host.code, host.playerId, undefined);
+    if (!started.ok) throw new Error('start failed');
+    expect((started.state.endsAt ?? 0) - clock.now()).toBe(config.quarterMs);
+  });
+
+  it.each(config.durationMinutes.options)('lets the host pick a %i minute game', (minutes) => {
+    const { rooms, clock } = setup();
+    const host = rooms.create('Sara');
+    if (!host.ok) throw new Error('create failed');
+    const started = rooms.start(host.code, host.playerId, minutes);
+    if (!started.ok) throw new Error('start failed');
+    const expected = (config.quarterMs * minutes) / config.durationMinutes.default;
+    expect((started.state.endsAt ?? 0) - clock.now()).toBe(expected);
+  });
+
+  it('rejects a game length that is not on offer and stays in the lobby', () => {
+    const { rooms } = setup();
+    const host = rooms.create('Sara');
+    if (!host.ok) throw new Error('create failed');
+    expect(rooms.start(host.code, host.playerId, 7)).toMatchObject({
+      ok: false,
+      code: 'INVALID_DURATION',
+    });
+    expect(rooms.view(host.code)?.phase).toBe('lobby');
+  });
+
   it('hands host to the player who has been in the room longest when the host leaves', () => {
     const { rooms, clock } = setup();
     const host = rooms.create('Sara');

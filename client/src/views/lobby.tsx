@@ -17,6 +17,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
   const [problem, setProblem] = useState<string | null>(null);
   const [companyError, setCompanyError] = useState<string | null>(null);
   const companyRef = useRef<HTMLInputElement>(null);
+  const [minutes, setMinutes] = useState<number>(config.durationMinutes.default);
   const [copied, setCopied] = useState<'yes' | 'no' | null>(null);
   const canSend = conn === 'open';
   const shown = problem ?? serverError?.message ?? null;
@@ -29,7 +30,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
   }
 
   function onStart() {
-    submit({ t: 'start' });
+    submit({ t: 'start', minutes });
   }
 
   function onRename(event: Event) {
@@ -149,6 +150,24 @@ export function Lobby({ room }: { room: PublicRoomState }) {
               </p>
             )}
           </form>
+          <fieldset className={styles.renameForm}>
+            <legend className={styles.label}>Game length</legend>
+            <div className={styles.shareRow}>
+              {config.durationMinutes.options.map((option) => (
+                <label key={option} className="btn btn-secondary">
+                  <input
+                    type="radio"
+                    name="game-length"
+                    value={option}
+                    checked={minutes === option}
+                    onChange={() => setMinutes(option)}
+                    disabled={!canSend}
+                  />{' '}
+                  {option} min
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <button
             type="button"
             className="btn btn-primary"

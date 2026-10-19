@@ -9,6 +9,9 @@ export const config = {
   prTimerMs: 90_000, // auto-merge timer per PR
   prCount: { base: 8, perPlayer: 4, min: 12, max: 30 }, // clamp(base + perPlayer × players, min, max)
   cleanShare: 1 / 3, // about a third of each draw is clean
+  // Game length the host can pick at start. quarterMs is the `default` length; the others scale it.
+  durationMinutes: { options: [5, 10, 15], default: 10 },
+  prCountFloor: 6, // a shortened game never draws fewer PRs than this (3 bug types + a clean one)
 
   // Starting state
   startingValue: 10_000_000,

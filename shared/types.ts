@@ -229,4 +229,5 @@ export type ErrorCode =
   | 'INVALID_COMMENT'
   | 'PING_COOLDOWN'
   | 'INVALID_COMPANY_NAME'
+  | 'INVALID_DURATION'
   | 'SERVER_ERROR';
