@@ -17,8 +17,12 @@ import { useStore } from '../../net/use-store';
 import { openQueue } from './queue-rules';
 import { ActivityFeed } from './ActivityFeed';
 import { Dashboard } from './Dashboard';
+import { LineComments } from './LineComments';
+import { PrComments } from './PrComments';
 import { PrView } from './PrView';
 import { Queue } from './Queue';
+import { commentsOn } from './comment-rules';
+import { useDiscussion } from './use-discussion';
 import styles from './GameScreen.module.css';
 
 export function GameScreen() {
@@ -42,6 +46,7 @@ export function GameScreen() {
 
   const selectedPrId = selected?.id ?? null;
   const selectedOpen = selected?.status === 'open';
+  const discussion = useDiscussion(selectedPrId);
 
   // Presence. Opening a PR is sent only while it is open. The server ignores opens on resolved PRs
   // anyway, and skipping them keeps PR_NOT_OPEN out of the store's error. Re-running on reconnect
@@ -81,7 +86,42 @@ export function GameScreen() {
               Select a PR from the queue to review it.
             </p>
           ) : (
-            <PrView pr={selected} players={room.players} myId={myId} now={now} />
+            <PrView
+              pr={selected}
+              players={room.players}
+              myId={myId}
+              now={now}
+              selectedLine={discussion.selectedLine}
+              onLineSelect={discussion.selectLine}
+              renderAfterLine={(line) => (
+                <LineComments
+                  line={line.index}
+                  comments={commentsOn(selected.comments, line.index)}
+                  selected={discussion.selectedLine === line.index}
+                  connected={conn === 'open'}
+                  onSubmit={(text) =>
+                    net.send({ t: 'comment', prId: selected.id, line: line.index, text })
+                  }
+                />
+              )}
+              prComments={
+                <PrComments
+                  comments={selected.comments}
+                  open={selectedOpen}
+                  connected={conn === 'open'}
+                  now={now}
+                  lastPingAt={discussion.lastPingAt}
+                  onPing={() => {
+                    const sent = net.send({ t: 'ping', prId: selected.id });
+                    if (sent) discussion.recordPing(selected.id, serverTime());
+                    return sent;
+                  }}
+                  onSubmit={(text) =>
+                    net.send({ t: 'comment', prId: selected.id, line: null, text })
+                  }
+                />
+              }
+            />
           )}
         </section>
 

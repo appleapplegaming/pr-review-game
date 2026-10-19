@@ -20,6 +20,7 @@ export interface PrViewProps {
   now: number;
   actionBar?: ComponentChildren;
   prComments?: ComponentChildren;
+  selectedLine?: number | null;
   onLineSelect?: (line: DiffLine) => void;
   renderAfterLine?: (line: DiffLine) => ComponentChildren;
 }
@@ -31,6 +32,7 @@ export function PrView({
   now,
   actionBar,
   prComments,
+  selectedLine,
   onLineSelect,
   renderAfterLine,
 }: PrViewProps) {
@@ -64,7 +66,12 @@ export function PrView({
 
       <p className={styles.description}>{pr.description}</p>
 
-      <DiffView diff={pr.diff} onLineSelect={onLineSelect} renderAfterLine={renderAfterLine} />
+      <DiffView
+        diff={pr.diff}
+        selectedLine={selectedLine}
+        onLineSelect={onLineSelect}
+        renderAfterLine={renderAfterLine}
+      />
 
       <div className={styles.actionBar} data-slot="action-bar">
         {actionBar}

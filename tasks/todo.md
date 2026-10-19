@@ -381,12 +381,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Tapping a diff line opens a comment box anchored under that line. There's also a box for comments on the whole PR. Comment threads update live, and comments are rendered as text, never as HTML. Add a 🙋 Second opinion? button that shows its 20 s cooldown.
 
 **Acceptance criteria:**
-- [ ] A comment containing `<img onerror>` shows up as literal text.
-- [ ] Comments appear for other players without a refresh, and the 💬 count updates.
-- [ ] The ping button is disabled during its cooldown, and the highlight appears in everyone's queue.
+- [x] A comment containing `<img onerror>` shows up as literal text.
+- [x] Comments appear for other players without a refresh, and the 💬 count updates.
+- [x] The ping button is disabled during its cooldown, and the highlight appears in everyone's queue.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/client/comments.test.tsx`
+- [x] Tests pass: `npx vitest run tests/client/comments.test.tsx`
 - [ ] Manual check: comments and a ping show up in a second browser
 
 **Dependencies:** Task 16 (can run in parallel with Tasks 17 and 19)
