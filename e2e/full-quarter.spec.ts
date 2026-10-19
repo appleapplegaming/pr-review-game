@@ -55,6 +55,8 @@ test('a desktop and a phone player finish a quarter together', async ({ browser 
     await queue(desktop.page).getByRole('button').first().click();
     await desktop.page.getByRole('button', { name: /^Merge/ }).click();
     await expect(desktop.page.getByRole('status').filter({ hasText: /^Merged/ })).toBeVisible();
+    // The Merge button is gone, so focus moves to the PR heading instead of dropping to <body>.
+    await expect(desktop.page.getByRole('heading', { level: 2 }).first()).toBeFocused();
   }
 
   await waitForPostmortem(desktop.page);

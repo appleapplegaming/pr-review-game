@@ -497,8 +497,8 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `content/README.md` with the content rules from the spec, the area and type matrix (which ids go in which batch), and a checklist for each PR. The checklist covers: the bug is findable in about 60 s on a phone, it needs no knowledge outside the diff, no line is over about 70 characters, bigger features get bigger diffs, and some clean PRs look suspicious.
 
 **Acceptance criteria:**
-- [ ] The matrix assigns all 30 ids so the pool comes out 9 clean, 7 money, 7 security and 7 outage across the six areas.
-- [ ] The matrix includes the four seed PRs from Task 3.
+- [x] The matrix assigns all 30 ids so the pool comes out 9 clean, 7 money, 7 security and 7 outage across the six areas.
+- [x] The matrix includes the four seed PRs from Task 3.
 
 **Verification:**
 - [ ] Manual check: a human reviews the matrix

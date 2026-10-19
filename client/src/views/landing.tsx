@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { config } from '../../../shared/config';
 import { net } from '../net/live';
 import { store } from '../net/store';
 import { useStore } from '../net/use-store';
@@ -52,7 +53,7 @@ export function Landing({ initialCode }: { initialCode: string | null }) {
           <input
             name="name"
             autoComplete="nickname"
-            maxLength={40}
+            maxLength={config.name.max}
             value={name}
             onInput={(e) => setName(e.currentTarget.value)}
             disabled={!canSend}

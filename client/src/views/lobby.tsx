@@ -1,4 +1,5 @@
 import { useState } from 'preact/hooks';
+import { config } from '../../../shared/config';
 import { net } from '../net/live';
 import { selectIsHost, store } from '../net/store';
 import { useStore } from '../net/use-store';
@@ -115,7 +116,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
               <input
                 id="company-name"
                 className={styles.linkField}
-                maxLength={40}
+                maxLength={config.companyName.max}
                 value={companyDraft}
                 onInput={(e) => setCompanyDraft(e.currentTarget.value)}
                 disabled={!canSend}

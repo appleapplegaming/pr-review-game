@@ -13,7 +13,7 @@ The build has these parts:
 - **Content:** a pool of 30 hand-written PRs, checked by a content-validation test.
 - **Hosting:** one Docker image on Render's free tier.
 
-The repo is greenfield. Today it has only the spec, the intent doc and the vendored skills.
+The implementation is complete apart from the manual and human-review items still open in `tasks/todo.md`; see `docs/handoff.md`.
 
 ## Dependency Graph
 
@@ -86,17 +86,17 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 ### Phase 3: Client (vertical slices)
 - [x] Task 14: Client scaffold and net layer: socket, reconnect, clock offset, store
 - [x] Task 15: Lobby: create, join by code or link, start, rename company
-- [ ] Task 16: Queue and PR view (desktop): queue cards, countdown ring, DiffView, presence
+- [x] Task 16: Queue and PR view (desktop): queue cards, countdown ring, DiffView, presence
 - [x] Task 17: Merge and decline actions, rejection feedback, keyboard shortcuts
-- [ ] Task 18: Line and PR comments, second-opinion ping
-- [ ] Task 19: Dashboard, activity feed and toasts
+- [x] Task 18: Line and PR comments, second-opinion ping
+- [x] Task 19: Dashboard, activity feed and toasts
 
 ### Checkpoint D: Desktop playable
 - [ ] Two desktop browsers on `npm run dev` can play a full quarter by hand
 
 ### Phase 4: Phone, postmortem and polish
 - [x] Task 20: Phone layout: tab bar, fixed action bar, 44 px targets, no horizontal scroll
-- [ ] Task 21: Postmortem view, bankruptcy banner and play again
+- [x] Task 21: Postmortem view, bankruptcy banner and play again
 - [ ] Task 22: Accessibility pass (focus, contrast, `aria-live`, reduced motion)
 
 ### Checkpoint E: Feature complete
@@ -104,10 +104,10 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [ ] The postmortem matches the spec's section order and content
 
 ### Phase 5: Content (parallel track, can start after Task 3)
-- [ ] Task 23: Content authoring guide and per-PR quality checklist
-- [ ] Task 24: PR batch A: payments and data (9 PRs)
-- [ ] Task 25: PR batch B: auth and api (9 PRs)
-- [ ] Task 26: PR batch C: infra and ui (8 PRs), plus the pool-mix assertion
+- [x] Task 23: Content authoring guide and per-PR quality checklist
+- [x] Task 24: PR batch A: payments and data (9 PRs)
+- [x] Task 25: PR batch B: auth and api (9 PRs)
+- [x] Task 26: PR batch C: infra and ui (8 PRs), plus the pool-mix assertion
 
 ### Phase 6: Ship
 - [x] Task 27: Playwright e2e: desktop and phone players in a time-scaled quarter

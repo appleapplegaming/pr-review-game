@@ -42,6 +42,19 @@ export function PrView({
   const open = pr.status === 'open';
   const articleRef = useRef<HTMLElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const wasOpen = useRef({ id: pr.id, open });
+
+  // Merging or declining removes the buttons the player was using, and focus would drop to <body>.
+  // When this PR resolves, move focus to its heading, unless focus is already somewhere real (a
+  // comment box, say) that another player's action must not steal it from.
+  useEffect(() => {
+    const before = wasOpen.current;
+    wasOpen.current = { id: pr.id, open };
+    if (before.id !== pr.id || !before.open || open) return;
+    const active = document.activeElement;
+    if (active === null || active === document.body) titleRef.current?.focus();
+  }, [pr.id, open]);
 
   // On a phone the action bar is fixed to the screen. Track its height, so the article can leave
   // room for it at the bottom. The bar's height changes when a rejection notice appears.
@@ -62,7 +75,7 @@ export function PrView({
         <p className={styles.kicker}>
           {pr.area} · {pr.author}
         </p>
-        <h2 id="pr-title" className={styles.title}>
+        <h2 id="pr-title" ref={titleRef} tabIndex={-1} className={styles.title}>
           {pr.title}
         </h2>
         <div className={styles.meta}>
