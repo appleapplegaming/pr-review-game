@@ -1,0 +1,54 @@
+.game {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.kicker {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  overflow-wrap: anywhere;
+}
+
+.columns {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.queue,
+.review,
+.sidebar {
+  min-width: 0;
+}
+
+.review {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+@media (min-width: 900px) {
+  .columns {
+    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr) minmax(12rem, 16rem);
+    align-items: start;
+  }
+}

@@ -339,12 +339,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Build the three-column desktop layout for 900 px and wider. Each queue card shows the title, area, a countdown ring (red under 20 s), 👀 viewers, a 💬 count and the 🙋 highlight. The PR view shows the title, description and a `DiffView` with a gutter, `+`/`−` markers and `pre-wrap`. Selecting a PR sends `open`.
 
 **Acceptance criteria:**
-- [ ] The countdown matches the server's expiry time to within 1 s, because it uses `serverTime()`.
-- [ ] `DiffView` line numbers match `parseDiff()` from `shared/`, and added and removed lines show a marker, not just a colour.
-- [ ] Opening a PR shows "👀 Name" on that card for the other players.
+- [x] The countdown matches the server's expiry time to within 1 s, because it uses `serverTime()`.
+- [x] `DiffView` line numbers match `parseDiff()` from `shared/`, and added and removed lines show a marker, not just a colour.
+- [x] Opening a PR shows "👀 Name" on that card for the other players.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/client/diff-view.test.tsx`
+- [x] Tests pass: `npx vitest run tests/client/diff-view.test.tsx`
 - [ ] Manual check: two players see the same queue and timers
 
 **Dependencies:** Task 15

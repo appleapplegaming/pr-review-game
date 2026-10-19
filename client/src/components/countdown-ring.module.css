@@ -1,0 +1,46 @@
+.ring,
+.urgent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.svg {
+  width: 2rem;
+  height: 2rem;
+  transform: rotate(-90deg);
+  flex: none;
+}
+
+.track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 4;
+}
+
+.arc {
+  fill: none;
+  stroke: var(--color-accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.urgent .arc {
+  stroke: var(--color-danger);
+}
+
+.urgent .label {
+  color: var(--color-danger);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,0 +1,115 @@
+/* Diff colours are tokens scoped to the diff, with both dark-mode forms like global.css. The sign
+   and the screen-reader word carry the meaning, so colour is never the only cue. */
+.diff {
+  --diff-add-bg: #e6f4ea;
+  --diff-add-fg: #0f5132;
+  --diff-remove-bg: #fbe9e7;
+  --diff-remove-fg: #8a1c12;
+  --diff-gutter: #5b6372;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .diff {
+    --diff-add-bg: #14321f;
+    --diff-add-fg: #a7e3bd;
+    --diff-remove-bg: #3a1a17;
+    --diff-remove-fg: #ffb4a8;
+    --diff-gutter: #9aa3b2;
+  }
+}
+
+:root[data-theme='dark'] .diff {
+  --diff-add-bg: #14321f;
+  --diff-add-fg: #a7e3bd;
+  --diff-remove-bg: #3a1a17;
+  --diff-remove-fg: #ffb4a8;
+  --diff-gutter: #9aa3b2;
+}
+
+.row {
+  margin: 0;
+}
+
+.rowBody,
+.rowButton {
+  display: grid;
+  grid-template-columns: 3rem 1.25rem minmax(0, 1fr);
+  width: 100%;
+  margin: 0;
+  padding: 0 var(--space-2) 0 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.rowButton {
+  cursor: pointer;
+  min-height: 44px;
+  align-items: center;
+}
+
+.rowButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.rowButton[aria-pressed='true'] {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.gutter {
+  color: var(--diff-gutter);
+  text-align: right;
+  padding-right: var(--space-2);
+  user-select: none;
+}
+
+.marker {
+  user-select: none;
+  text-align: center;
+  font-weight: 700;
+}
+
+.code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+[data-kind='add'] > .rowBody,
+[data-kind='add'] > .rowButton {
+  background: var(--diff-add-bg);
+  color: var(--diff-add-fg);
+}
+
+[data-kind='remove'] > .rowBody,
+[data-kind='remove'] > .rowButton {
+  background: var(--diff-remove-bg);
+  color: var(--diff-remove-fg);
+}
+
+.after {
+  padding: var(--space-2) var(--space-2) var(--space-2) 4.25rem;
+}

@@ -61,4 +61,5 @@ export const config = {
   reconnectJitter: 0.5, // delay is drawn from [ceiling × (1 − jitter), ceiling]
   eventQueueMax: 20, // oldest toasts drop off once the queue is longer than this
   feedMax: 50, // activity feed entries kept per quarter; the oldest drop off first
+  countdownUrgentMs: 20_000, // the countdown ring turns red below this many ms left
 } as const;
