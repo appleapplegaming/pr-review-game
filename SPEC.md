@@ -6,9 +6,9 @@ Status: **Draft, awaiting approval**. Source of intent: [`docs/intent/pr-review-
 
 Correct any of these before planning starts.
 
-1. **Team size is 2–8 players.** It also works solo, but solo isn't tuned.
+1. **Team size is 2–8 players** (confirmed). It also works solo, but solo isn't tuned.
 2. **Room state lives in server memory only.** There's no database, and a server restart ends any running games.
-3. **The PR diffs are mostly TypeScript/JavaScript**, with a few Python, SQL, YAML and Terraform PRs mixed in for infra flavour. (See Open Questions.)
+3. **All PR diffs are TypeScript** (confirmed). Infra PRs are TypeScript too, e.g. config objects, middleware and job runners.
 4. **Incidents fire a few seconds after a buggy merge, not instantly.** "What did we just ship?" adds tension and is how production bugs really surface.
 5. **The company is fictional.** The room creator can rename it; the default is a random funny name.
 6. **Targets are evergreen browsers**: Chrome, Safari, Firefox and Edge, including iOS Safari and Android Chrome.
@@ -196,7 +196,7 @@ export const pr: PullRequest = {
 | Client | Preact + Vite, CSS modules, no UI framework |
 | Tests | Vitest for unit and integration, Playwright for end-to-end (desktop and a 390×844 phone viewport) |
 | Lint/format | ESLint (typescript-eslint) and Prettier |
-| Deploy | One `Dockerfile` and one port (`PORT`, default 3000). Runs on Fly/Render/any VM. |
+| Deploy | One `Dockerfile` and one port (`PORT`, default 3000). Primary target: **Render free web service**. Fallback: a laptop plus a free Cloudflare Tunnel. Any VM also works. |
 
 **Architecture:** The server is authoritative.
 - Clients send **intents** such as `merge`, `decline`, `comment` and `ping`.
@@ -392,7 +392,7 @@ The pool must also match the target mix (9 / 7 / 7 / 7). This test is the safety
   - Adding dependencies beyond the stack listed above.
   - Adding persistence or a database.
   - Changing the scoring model or the out-of-scope list.
-  - Choosing a deploy target.
+  - Changing the deploy target.
 - **Never:**
   - Commit secrets.
   - Edit `.claude/skills` (vendored).
@@ -410,10 +410,17 @@ The pool must also match the target mix (9 / 7 / 7 / 7). This test is the safety
 7. **One command:** `npm start` (or `docker run`) serves the whole game on one port.
 8. **Playtest:** One real playtest with the team on a call. Everyone finishes the quarter, and the scoring numbers are tuned afterwards in `shared/config.ts`.
 
+## Hosting
+
+| Option | Cost | Caveats |
+|---|---|---|
+| **Render free web service** (chosen) | $0 | Spins down after 15 min without traffic. The first visit after that takes about 1 min to wake up. Since Feb 2026, WebSocket messages keep it awake during a game. Render may restart it occasionally, which ends any game in progress. |
+| Laptop + Cloudflare Tunnel | $0 | Only up while the host's laptop is running it. |
+| Fly.io | ~$2–3/month | No free tier for new accounts. Always on and no cold start. |
+
+In-memory rooms suit a sleeping free host: when nobody is playing, there's nothing to lose. The host should open the site a minute before the call so it's already awake.
+
 ## Open Questions
 
-1. **Languages:** What does the team mostly write? Should the PRs lean TypeScript, or mirror our real stack (e.g. Python, Go, PHP)?
-2. **Team size:** What's the typical size for a session? The PR count formula assumes 2–8.
-3. **Hosting:** Where should it be hosted for the playtest? Fly, Render, an internal box, or just a laptop plus a tunnel?
-4. **Company name:** Keep the "random funny company name, host can rename" idea, or always use a fixed name?
-5. **Incident delay:** Is a 4–12 s delay before an incident fires more fun, or would you rather see the hit immediately on merge?
+1. **Company name:** Keep the "random funny company name, host can rename" idea, or always use a fixed name?
+2. **Incident delay:** Is a 4–12 s delay before an incident fires more fun, or would you rather see the hit immediately on merge?
