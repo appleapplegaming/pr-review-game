@@ -12,12 +12,17 @@ const css = {
 };
 
 /**
- * A colour token as the page defines it. The light value is the first declaration in the file
- * (the :root block). The dark value is the last one, which is the data-theme dark block that the
- * media query and the attribute both repeat. Files that define a token twice must keep this order.
+ * A colour token as the page defines it. Tokens in global.css use light-dark(light, dark).
+ * Other files repeat a token per theme: the light value is the first declaration and the dark
+ * value is the last, so they must keep that order.
  */
 function token(file: keyof typeof css, name: string, mode: 'light' | 'dark'): string {
-  const found = [...css[file].matchAll(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{6})\\s*;`, 'g'))];
+  const hex = String.raw`(#[0-9a-fA-F]{6})`;
+  const pair = css[file].match(
+    new RegExp(String.raw`--${name}:\s*light-dark\(\s*${hex}\s*,\s*${hex}\s*\)\s*;`),
+  );
+  if (pair !== null) return ((mode === 'light' ? pair[1] : pair[2]) ?? '').toLowerCase();
+  const found = [...css[file].matchAll(new RegExp(String.raw`--${name}:\s*${hex}\s*;`, 'g'))];
   const hit = mode === 'light' ? found[0] : found[found.length - 1];
   if (hit === undefined) throw new Error(`token --${name} not found in ${file}`);
   return (hit[1] ?? '').toLowerCase();
@@ -66,22 +71,5 @@ describe('colour tokens meet WCAG AA in both themes', () => {
   it('the postmortem primary button and bug tag do not hard-code white text', () => {
     // White on the dark accent or the dark bug border fails AA, so these take a theme token.
     expect(css.postmortem).not.toMatch(/color:\s*#ffffff/i);
-  });
-});
-
-describe('dark theme tokens', () => {
-  it('match between the media query block and the data-theme block', () => {
-    // Plain CSS cannot share one dark block between the two selectors, so guard against drift.
-    const block = (open: string) => {
-      const start = css.global.indexOf(open);
-      const body = css.global.slice(css.global.indexOf('{', start) + 1);
-      return body.slice(0, body.indexOf('}'));
-    };
-    const tokens = (b: string) =>
-      [...b.matchAll(/--[\w-]+:\s*#[0-9a-fA-F]{6}\s*;/g)].map((m) => m[0].replace(/\s+/g, ''));
-    const media = tokens(block(":root:not([data-theme='light'])"));
-    const attr = tokens(block(":root[data-theme='dark']"));
-    expect(media.length).toBeGreaterThan(0);
-    expect(attr).toEqual(media);
   });
 });
