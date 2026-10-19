@@ -318,13 +318,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Build the landing and lobby screens. A player can create a room, or join with a code or a `/r/CODE` link plus a name. The lobby shows the player list (host marked) and a share link with a copy button. The host also gets start and rename-company controls.
 
 **Acceptance criteria:**
-- [ ] Opening `/r/KZQX` fills in the code, so the player only needs to type a name.
-- [ ] Only the host sees the Start and Rename controls. Server errors (unknown room, invalid name) show up inline.
-- [ ] Refreshing the page puts the player back in the same seat.
+- [x] Opening `/r/KZQX` fills in the code, so the player only needs to type a name.
+- [x] Only the host sees the Start and Rename controls. Server errors (unknown room, invalid name) show up inline.
+- [x] Refreshing the page puts the player back in the same seat.
 
 **Verification:**
-- [ ] Manual check: two browsers on `npm run dev` can create, join and start a game.
-- [ ] Build succeeds: `npm run build`
+- [ ] Manual check: two browsers on `npm run dev` can create, join and start a game. (Automated Playwright run passed: two browser contexts, create, join by link, rename, start. A human check is still open.)
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Task 14
 

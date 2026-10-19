@@ -6,6 +6,7 @@
   --color-text: #1a1d23;
   --color-muted: #5b6372;
   --color-accent: #2b5fd9;
+  --color-danger: #b42318;
   --space-2: 0.5rem;
   --space-4: 1rem;
   --space-6: 1.5rem;
@@ -20,6 +21,7 @@
     --color-text: #eceef2;
     --color-muted: #9aa3b2;
     --color-accent: #7ea6ff;
+    --color-danger: #ff8a80;
   }
 }
 
@@ -29,6 +31,7 @@
   --color-text: #eceef2;
   --color-muted: #9aa3b2;
   --color-accent: #7ea6ff;
+  --color-danger: #ff8a80;
 }
 
 *,

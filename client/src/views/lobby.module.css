@@ -1,0 +1,149 @@
+.panel {
+  display: grid;
+  gap: var(--space-6);
+  max-width: 36rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.kicker,
+.muted {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  margin: 0 0 var(--space-2);
+  font-size: 1.125rem;
+}
+
+.code {
+  margin: 0;
+  font-weight: 600;
+}
+
+.code span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.2em;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.share,
+.renameForm,
+.hostControls {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.shareRow {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.linkField {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-muted);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  min-width: 0;
+  width: 100%;
+}
+
+.primary,
+.secondary {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary {
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.secondary {
+  border: 1px solid var(--color-accent);
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary:focus-visible,
+.secondary:focus-visible,
+.linkField:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.badges {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.badge {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+@media (min-width: 600px) {
+  .shareRow {
+    grid-template-columns: 1fr auto;
+  }
+}
