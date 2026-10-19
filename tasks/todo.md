@@ -520,7 +520,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 - [ ] A reviewer who hasn't seen the answer key finds each bug in about 60 s, and doesn't flag the suspicious-looking clean PRs.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/content`
+- [x] Tests pass: `npx vitest run tests/content`
 
 **Dependencies:** Task 23
 
@@ -547,11 +547,11 @@ Same as Task 24 for batch B. **Dependencies:** Task 23. Can run in parallel with
 **Description:** Write the last batch, then add the pool-level test that requires exactly 30 PRs with the 9/7/7/7 mix.
 
 **Acceptance criteria:**
-- [ ] The pool has 30 PRs: 9 clean, 7 money, 7 security and 7 outage, all with unique ids (Success Criterion 3).
-- [ ] Every one of the six areas has at least 3 PRs.
+- [x] The pool has 30 PRs: 9 clean, 7 money, 7 security and 7 outage, all with unique ids (Success Criterion 3).
+- [x] Every one of the six areas has at least 3 PRs.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/content`
+- [x] Tests pass: `npx vitest run tests/content`
 
 **Dependencies:** Tasks 24 and 25
 

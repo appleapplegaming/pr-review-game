@@ -5,7 +5,7 @@ export const pr: PullRequest = {
   title: 'Rate limit login attempts per account',
   author: 'ines.f',
   area: 'auth',
-  description: 'Blocks further login attempts after too many failures in 15 minutes.',
+  description: 'Blocks further login attempts after too many tries in 15 minutes.',
   language: 'ts',
   diff: `
 @@ auth/rateLimit.ts @@

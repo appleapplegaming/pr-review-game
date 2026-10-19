@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { Bug, PullRequest } from '../../shared/types';
 import { validatePool, validatePr, type ValidationIssue } from '../../content/validate';
 import { pool } from '../../content/prs';
+import { parseDiff } from '../../shared/diff';
 
 /** A diff with `count` rendered lines after the @@ header; lines in `addAt` are `+` lines. */
 function diffOf(count: number, addAt: number[] = []): string {
@@ -223,17 +224,38 @@ describe('validatePool', () => {
   });
 });
 
-describe('seed pool (content/prs)', () => {
+describe('full pool (content/prs)', () => {
   it('passes validation as a whole', () => {
     expect(validatePool(pool)).toEqual([]);
   });
 
-  it('contains the four Task 3 seeds with their matrix ids', () => {
-    expect(pool.map((p) => p.id).sort()).toEqual(['auth-001', 'infra-001', 'pay-004', 'ui-001']);
+  it('still contains the four Task 3 seeds', () => {
+    const ids = pool.map((p) => p.id);
+    for (const seed of ['pay-004', 'auth-001', 'infra-001', 'ui-001']) {
+      expect(ids).toContain(seed);
+    }
   });
 
-  it('has one clean PR and one PR of each bug type, so the engine has real content', () => {
-    const types = pool.map((p) => p.bug?.type ?? 'clean').sort();
-    expect(types).toEqual(['clean', 'money', 'outage', 'security']);
+  it('has an incident text and explanation for every buggy PR and none for clean PRs', () => {
+    for (const p of pool) {
+      if (p.bug) {
+        expect(p.bug.lines.length, p.id).toBeGreaterThan(0);
+        expect(p.bug.incident.length, p.id).toBeGreaterThan(0);
+      } else {
+        expect(p.bug, p.id).toBeNull();
+      }
+    }
+  });
+
+  it('never has a - line that is identical to the + line right after it', () => {
+    for (const p of pool) {
+      const lines = parseDiff(p.diff);
+      lines.forEach((line, i) => {
+        const next = lines[i + 1];
+        if (line.kind === 'remove' && next?.kind === 'add') {
+          expect(next.text, `${p.id} line ${line.index}`).not.toBe(line.text);
+        }
+      });
+    }
   });
 });

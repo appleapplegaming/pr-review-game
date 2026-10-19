@@ -5,7 +5,7 @@ export const pr: PullRequest = {
   title: 'Handle grandfathered accounts at renewal',
   author: 'owen.d',
   area: 'auth',
-  description: 'Keeps grandfathered accounts on their legacy plan at renewal.',
+  description: 'Renews grandfathered accounts on their legacy plan and price.',
   language: 'ts',
   diff: `
 @@ auth/renewals.ts @@

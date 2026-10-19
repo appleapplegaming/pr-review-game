@@ -11,8 +11,7 @@ export const pr: PullRequest = {
 @@ checkout/total.ts @@
  export function total(cart: Cart, promo?: Promo): number {
    let sum = cart.items.reduce((s, i) => s + i.price * i.qty, 0);
--  sum -= memberDiscount(cart);
-+  sum -= memberDiscount(cart);
+   sum -= memberDiscount(cart);
 +  if (promo) {
 +    sum -= sum * promo.percent;
 +  }
@@ -26,7 +25,7 @@ export const pr: PullRequest = {
   bug: {
     type: 'money',
     severity: 'major',
-    lines: [8, 9],
+    lines: [7, 8],
     explanation:
       'The promo block is copied, so the code is applied twice. A 50% code takes 75% off instead of 50%, and the order can end up almost free.',
     incident: '💸 Promo stacking bug shipped. Customers checking out for $0. −$2M',

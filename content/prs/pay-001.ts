@@ -22,7 +22,7 @@ export const pr: PullRequest = {
    }
 -  return requested;
 +  // Never refund more than the customer still has charged.
-+  // The charge is net of earlier refunds, so this is the cap.
++  // Earlier refunds are subtracted from the charge to get the cap.
 +  const netCharged = charge.amountCents -
 +    charge.refundedCents;
 +  return Math.min(requested, netCharged);
