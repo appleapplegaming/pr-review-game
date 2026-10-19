@@ -37,7 +37,7 @@ export interface ServerOptions {
   random?: () => number;
   /** The PR pool. Defaults to content/prs. */
   pool?: readonly PullRequest[];
-  /** Environment read for SHIP_IT_TIME_SCALE. Defaults to process.env. */
+  /** Environment read for SHIP_IT_TIME_SCALE and SHIP_IT_SEED. Defaults to process.env. */
   env?: NodeJS.ProcessEnv;
 }
 
@@ -75,6 +75,17 @@ export function timingFromEnv(env: NodeJS.ProcessEnv): Timing {
   return scaleTiming(base, scale);
 }
 
+/**
+ * A fixed seed for every room's PR draw, from SHIP_IT_SEED. Like SHIP_IT_TIME_SCALE it applies only
+ * when NODE_ENV=test, so the e2e tests can pick a quarter that is safe to merge through blindly.
+ */
+export function roomSeedFromEnv(env: NodeJS.ProcessEnv): number | undefined {
+  if (env.NODE_ENV !== 'test' || env.SHIP_IT_SEED === undefined) return undefined;
+  const raw = env.SHIP_IT_SEED;
+  if (!/^\d+$/.test(raw)) throw new Error(`SHIP_IT_SEED must be a whole number, got "${raw}"`);
+  return Number(raw);
+}
+
 /** The port from PORT, or 3000 when PORT is unset or empty. */
 export function portFromEnv(env: NodeJS.ProcessEnv): number {
   const raw = env.PORT;
@@ -108,6 +119,7 @@ export function startServer(options: ServerOptions): Promise<RunningServer> {
     random: options.random ?? Math.random,
     pool: options.pool ?? defaultPool,
     timing: timingFromEnv(options.env ?? process.env),
+    roomSeed: roomSeedFromEnv(options.env ?? process.env),
   });
   const hub = createWsHub({ rooms, clock });
   const serveStatic = createStaticHandler(options.clientDir ?? DEFAULT_CLIENT_DIR);

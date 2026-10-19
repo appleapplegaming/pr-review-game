@@ -202,8 +202,12 @@ describe('validatePr', () => {
     });
   });
 
-  it('rejects a language other than ts', () => {
+  it('rejects an unsupported language', () => {
     expect(rules(validatePr(validPr({ language: 'js' as unknown as 'ts' })))).toContain('language');
+  });
+
+  it.each(['ts', 'java', 'python'] as const)('accepts %s', (language) => {
+    expect(rules(validatePr(validPr({ language })))).not.toContain('language');
   });
 });
 

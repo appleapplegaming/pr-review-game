@@ -7,7 +7,13 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { WebSocket } from 'ws';
 import { config } from '../shared/config';
 import { defaultTiming } from '../server/engine/state';
-import { portFromEnv, startServer, timingFromEnv, type RunningServer } from '../server/app';
+import {
+  portFromEnv,
+  roomSeedFromEnv,
+  startServer,
+  timingFromEnv,
+  type RunningServer,
+} from '../server/app';
 
 // Fixture layout:
 //   <root>/secret.txt        outside the client directory, must never be served
@@ -267,6 +273,23 @@ describe('SHIP_IT_TIME_SCALE', () => {
   it('rejects a non-positive or non-numeric scale in test mode', () => {
     expect(() => timingFromEnv({ NODE_ENV: 'test', SHIP_IT_TIME_SCALE: '0' })).toThrow();
     expect(() => timingFromEnv({ NODE_ENV: 'test', SHIP_IT_TIME_SCALE: 'fast' })).toThrow();
+  });
+});
+
+describe('SHIP_IT_SEED', () => {
+  it('reads a whole-number seed when NODE_ENV=test', () => {
+    expect(roomSeedFromEnv({ NODE_ENV: 'test', SHIP_IT_SEED: '7' })).toBe(7);
+  });
+
+  it('has no effect unless NODE_ENV=test, or when unset', () => {
+    expect(roomSeedFromEnv({ NODE_ENV: 'production', SHIP_IT_SEED: '7' })).toBeUndefined();
+    expect(roomSeedFromEnv({ SHIP_IT_SEED: '7' })).toBeUndefined();
+    expect(roomSeedFromEnv({ NODE_ENV: 'test' })).toBeUndefined();
+  });
+
+  it('rejects anything that is not a whole number in test mode', () => {
+    expect(() => roomSeedFromEnv({ NODE_ENV: 'test', SHIP_IT_SEED: 'abc' })).toThrow();
+    expect(() => roomSeedFromEnv({ NODE_ENV: 'test', SHIP_IT_SEED: '-1' })).toThrow();
   });
 });
 

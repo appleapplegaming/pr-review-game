@@ -10,6 +10,7 @@ function pr(overrides: Partial<PublicPr> & { id: string }): PublicPr {
     author: 'dev',
     area: 'payments',
     description: '',
+    language: 'ts',
     diff: '+x',
     featureValue: 500_000,
     spawnAt: 0,

@@ -35,6 +35,9 @@ export default defineConfig({
     env: {
       NODE_ENV: 'test',
       SHIP_IT_TIME_SCALE: '0.1',
+      // Every room draws the same quarter. Merging eight PRs blind bankrupts the company in about
+      // a quarter of random draws, so the full-quarter spec needs one that is safe (and has bugs).
+      SHIP_IT_SEED: '7',
       PORT: String(PORT),
     },
   },
