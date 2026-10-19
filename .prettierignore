@@ -1,0 +1,7 @@
+dist
+coverage
+.claude
+*.md
+package-lock.json
+tasks
+docs
