@@ -18,6 +18,18 @@ npm run build      # typecheck, client bundle to dist/client, server bundle to d
 npm start          # serves the game and WebSockets on $PORT (default 3000)
 ```
 
+Tests:
+
+```sh
+npm test                         # unit and integration tests (Vitest)
+npx playwright install chromium  # once: downloads the browser for the e2e tests
+npm run test:e2e                 # Playwright end-to-end tests
+```
+
+If browser downloads are blocked (some CI sandboxes ship their own Chromium), skip
+`playwright install` and point the tests at the existing browser instead:
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE=/path/to/chrome npm run test:e2e`.
+
 ## Run with Docker
 
 ```sh
