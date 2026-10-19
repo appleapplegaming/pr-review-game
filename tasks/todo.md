@@ -82,11 +82,11 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 **Acceptance criteria:**
 - [ ] PR counts are correct for 1, 2, 5 and 8 players (12, 12, 28 and 30), and the same seed always gives the same draw.
-- [ ] Every draw has at least one money, one security and one outage PR, and the clean share is about ⅓, tested over many seeds.
-- [ ] Every spawn falls within [0, 8:30], spawns are in order, and the jitter stays within ±20% of the slot.
+- [x] Every draw has at least one money, one security and one outage PR, and the clean share is about ⅓, tested over many seeds.
+- [x] Every spawn falls within [0, 8:30], spawns are in order, and the jitter stays within ±20% of the slot.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/setup.test.ts`
+- [x] Tests pass: `npx vitest run tests/engine/setup.test.ts`
 
 **Dependencies:** Task 3
 
