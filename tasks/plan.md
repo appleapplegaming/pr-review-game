@@ -110,7 +110,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [ ] Task 26: PR batch C: infra and ui (8 PRs), plus the pool-mix assertion
 
 ### Phase 6: Ship
-- [ ] Task 27: Playwright e2e: desktop and phone players in a time-scaled quarter
+- [x] Task 27: Playwright e2e: desktop and phone players in a time-scaled quarter
 - [ ] Task 28: Dockerfile and Render deploy
 - [ ] Task 29: Team playtest and balance tuning
 

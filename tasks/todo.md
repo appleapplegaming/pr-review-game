@@ -568,12 +568,12 @@ Same as Task 24 for batch B. **Dependencies:** Task 23. Can run in parallel with
 **Description:** Write the e2e tests from SPEC → Testing Strategy. Playwright's `webServer` starts a production build with `NODE_ENV=test SHIP_IT_TIME_SCALE=0.1`. Two browser contexts play: one desktop and one phone at 390×844.
 
 **Acceptance criteria:**
-- [ ] A comment and a ping from one player show up for the other.
-- [ ] The postmortem names who merged each bug, and says "nobody reviewed it" for auto-merges.
-- [ ] `document.documentElement.scrollWidth <= innerWidth` on the phone viewport on every screen.
+- [x] A comment and a ping from one player show up for the other.
+- [x] The postmortem names who merged each bug, and says "nobody reviewed it" for auto-merges.
+- [x] `document.documentElement.scrollWidth <= innerWidth` on the phone viewport on every screen.
 
 **Verification:**
-- [ ] `npm run test:e2e` passes 3 runs in a row (no flakes)
+- [x] `npm run test:e2e` passes 3 runs in a row (no flakes)
 
 **Dependencies:** Tasks 21, 22 and 26
 
