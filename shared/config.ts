@@ -60,4 +60,5 @@ export const config = {
   reconnectFactor: 2, // ceiling growth per failed attempt
   reconnectJitter: 0.5, // delay is drawn from [ceiling × (1 − jitter), ceiling]
   eventQueueMax: 20, // oldest toasts drop off once the queue is longer than this
+  feedMax: 50, // activity feed entries kept per quarter; the oldest drop off first
 } as const;

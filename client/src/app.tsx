@@ -9,6 +9,7 @@ import { Landing } from './views/landing';
 import { Lobby } from './views/lobby';
 import { GameScreen } from './views/game/GameScreen';
 import { PostmortemScreen } from './views/postmortem/PostmortemScreen';
+import { Toasts } from './views/game/Toasts';
 import styles from './app.module.css';
 
 const LABELS: Record<ConnState, string> = {
@@ -33,6 +34,7 @@ export function App() {
       {screen === 'lobby' && room !== null && <Lobby room={room} />}
       {screen === 'game' && <GameScreen />}
       {screen === 'postmortem' && <PostmortemScreen />}
+      <Toasts />
     </main>
   );
 }

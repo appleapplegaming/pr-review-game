@@ -402,13 +402,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Build the dashboard: company value, uptime to 3 decimals, breaches and time left in the quarter. Add an activity feed. Toasts for incidents, pings and catches appear on every screen, disappear after 4 s, use `aria-live` and respect `prefers-reduced-motion`.
 
 **Acceptance criteria:**
-- [ ] Every number on the dashboard is formatted with `formatMoney()` or the shared uptime formatter.
+- [x] Every number on the dashboard is formatted with `formatMoney()` or the shared uptime formatter.
 - [ ] Each incoming `event` shows as a toast for 4 s and is also added to the activity feed.
 - [ ] Toasts don't animate when `prefers-reduced-motion: reduce` is set.
 
 **Verification:**
 - [ ] Manual check: merging a buggy PR shows an incident toast 4–12 s later, and the dashboard numbers change
-- [ ] Build succeeds: `npm run build`
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Task 16
 
