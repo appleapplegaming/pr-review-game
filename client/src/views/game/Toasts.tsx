@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { config } from '../../../../shared/config';
 import type { GameEvent } from '../../../../shared/types';
+import { sfxForEvent } from '../../audio/sound';
 import { store } from '../../net/store';
 import { useStore } from '../../net/use-store';
 import {
@@ -41,6 +42,7 @@ export function Toasts() {
   useEffect(() => {
     if (events.length === 0) return;
     const playerId = store.getState().session?.playerId;
+    for (const queued of withoutOwnComments(events, playerId)) sfxForEvent(queued.event);
     setToasts((prev) =>
       addToasts(
         prev,

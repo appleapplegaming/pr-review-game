@@ -4,14 +4,33 @@
     {
       "name": "server",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["tsx", "watch", "server/index.ts"],
+      "runtimeArgs": [
+        "tsx",
+        "watch",
+        "server/index.ts"
+      ],
       "port": 3000
     },
     {
       "name": "client",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--config", "client/vite.config.ts"],
+      "runtimeArgs": [
+        "vite",
+        "--config",
+        "client/vite.config.ts"
+      ],
       "port": 5173
+    },
+    {
+      "name": "built",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "dist/server/index.js"
+      ],
+      "port": 3010,
+      "env": {
+        "PORT": "3010"
+      }
     }
   ]
 }

@@ -11,6 +11,7 @@ import { Lobby } from './views/lobby';
 import { GameScreen } from './views/game/GameScreen';
 import { PostmortemScreen } from './views/postmortem/PostmortemScreen';
 import { Toasts } from './views/game/Toasts';
+import { SoundControls } from './audio/SoundControls';
 import styles from './app.module.css';
 
 export function App() {
@@ -36,6 +37,7 @@ export function App() {
       {screen === 'game' && <GameScreen />}
       {screen === 'postmortem' && <PostmortemScreen />}
       <Toasts />
+      <SoundControls />
     </main>
   );
 }
