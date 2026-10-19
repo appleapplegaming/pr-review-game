@@ -516,7 +516,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write the batch A PRs from the Task 23 matrix.
 
 **Acceptance criteria:**
-- [ ] Every PR passes `validatePr()`, and its diff is real-looking TypeScript.
+- [x] Every PR passes `validatePr()`, and its diff is real-looking TypeScript.
 - [ ] A reviewer who hasn't seen the answer key finds each bug in about 60 s, and doesn't flag the suspicious-looking clean PRs.
 
 **Verification:**
