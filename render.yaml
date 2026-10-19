@@ -1,0 +1,14 @@
+# Render Blueprint for the free web service. Optional: the same settings can be entered by hand in the
+# Render dashboard (see README.md, "Deploy to Render"). Contains no secrets; the game needs no env vars.
+services:
+  - type: web
+    name: ship-it
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    autoDeploy: false
+    envVars:
+      - key: NODE_ENV
+        value: production
