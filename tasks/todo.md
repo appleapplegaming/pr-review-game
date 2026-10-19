@@ -81,7 +81,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `createQuarter(pool, playerCount, rng, now)`. It draws `clamp(8 + 4 × players, 12, 30)` PRs with about ⅓ clean and ⅔ buggy, and at least one PR of each bug type. It spreads their spawn times evenly over the first 8:30, with ±20% jitter, and sets the starting metrics.
 
 **Acceptance criteria:**
-- [ ] PR counts are correct for 1, 2, 5 and 8 players (12, 12, 28 and 30), and the same seed always gives the same draw.
+- [x] PR counts are correct for 1, 2, 5 and 8 players (12, 16, 28 and 30, per SPEC's `clamp(8 + 4 × players, 12, 30)`), and the same seed always gives the same draw.
 - [x] Every draw has at least one money, one security and one outage PR, and the clean share is about ⅓, tested over many seeds.
 - [x] Every spawn falls within [0, 8:30], spawns are in order, and the jitter stays within ±20% of the slot.
 

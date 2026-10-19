@@ -61,7 +61,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [ ] `npm run typecheck && npm run lint && npm test` are green on a clean clone
 
 ### Phase 1: Game engine (pure, TDD)
-- [ ] Task 4: Quarter setup: seeded RNG, PR draw and spawn schedule
+- [x] Task 4: Quarter setup: seeded RNG, PR draw and spawn schedule
 - [ ] Task 5: Decisions: merge and decline outcomes, first decision wins, presence
 - [ ] Task 6: Tick: spawns, auto-merge, delayed incidents, uptime and quarter end
 - [ ] Task 7: Comments and second-opinion pings
