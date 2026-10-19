@@ -1,6 +1,6 @@
 # Spec: PR Review Game ("Ship It")
 
-Status: **Draft, awaiting approval**. Source of intent: [`docs/intent/pr-review-game.md`](docs/intent/pr-review-game.md).
+Status: **Approved**. Source of intent: [`docs/intent/pr-review-game.md`](docs/intent/pr-review-game.md).
 
 ## Assumptions
 
@@ -51,7 +51,7 @@ A browser-based co-op game for our engineering team to play together on a call. 
 | Mix in each draw | About ⅓ clean and ⅔ buggy, with at least one of each bug type |
 
 - **Joining:** Players who join mid-quarter are dropped straight into the game.
-- **Ending:** The quarter ends at 10:00, or early once every PR is resolved and no more PRs are left to spawn. Any open PRs auto-merge when the quarter ends.
+- **Ending:** The quarter ends at 10:00, or early once every PR is resolved and no more PRs are left to spawn. Any open PRs auto-merge when the quarter ends, and every incident still waiting to fire fires at once, so the postmortem's numbers include them.
 
 ### Starting state
 
@@ -124,7 +124,7 @@ All of the numbers above live in one tunable config (`shared/config.ts`) so they
 The postmortem is shown to everyone when the quarter ends. Sections, in this order:
 
 1. **Headline:** Final company value, uptime, breaches and the badge.
-2. **🚨 What slipped through:** Each buggy PR that merged, sorted by damage. Each entry shows:
+2. **🚨 What slipped through:** Each buggy PR that merged, sorted by damage (total value lost, counting outage downtime at $40k per hour; ties go to the higher severity). Each entry shows:
    - the diff with the bug lines highlighted
    - a one-paragraph explanation
    - the incident text
@@ -182,7 +182,7 @@ export const pr: PullRequest = {
 - Each diff is 10–40 lines.
 - Each bug is findable by a careful reviewer within about 60 s on a phone. Nothing relies on knowledge outside the diff.
 - `featureValue` ranges from $0.2M to $2M, and bigger features have larger diffs.
-- The answer key is never sent to clients before the postmortem, so you can't cheat from devtools.
+- The answer key is never sent to clients before the postmortem, so you can't cheat from devtools. The only exceptions are what the game shows on purpose once a PR is resolved: an incident's text when it fires, and the catch toast and +$150k bonus when someone declines a buggy PR with the right type. Bug lines and explanations are never sent before the postmortem, and nothing about an open PR's bug is ever sent.
 
 ---
 
@@ -389,7 +389,6 @@ The pool must also match the target mix (9 / 7 / 7 / 7). This test is the safety
   - Render user text as text.
   - Keep the answer key server-side until the postmortem.
 - **Ask first:**
-  - Adding dependencies beyond the stack listed above.
   - Adding persistence or a database.
   - Changing the scoring model or the out-of-scope list.
   - Changing the deploy target.
@@ -429,3 +428,8 @@ None. Resolved decisions:
 - **Language:** All PRs are in TypeScript.
 - **Team size:** 2–8 players.
 - **Hosting:** Render free web service.
+- **Dependencies:** Add any dependency the work needs without asking.
+- **Leaks:** The answer-key rule and its exceptions are under PR Content → Content rules.
+- **Incident toasts:** They show only the incident text, not which PR caused it. The postmortem makes that link.
+- **End of quarter:** Incidents still waiting to fire when the quarter ends fire at once.
+- **Postmortem order:** "What slipped through" is sorted by total value lost.

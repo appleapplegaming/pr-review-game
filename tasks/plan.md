@@ -44,7 +44,7 @@ shared/ (types, config, protocol, money format)
 - **Money is stored as integer dollars everywhere.** `formatMoney()` in `shared/` is the only place that formats it.
 - **Full state snapshots, no diffs.** At most 30 PRs and 8 players keep a snapshot small. We broadcast after every accepted intent and every tick that changed something, never on idle ticks.
 - **Clock sync.** The client works out its offset from `welcome.serverNow` and measures it again on every reconnect. All countdowns are calculated from server timestamps. This keeps the protocol unchanged, and the spec's "within 1 s" is a loose enough target.
-- **Hand-written message validators** in `server/validate.ts`, with no schema library, because adding dependencies is "ask first". There are only 10 message shapes.
+- **Message validation with `zod`** in `server/validate.ts`. The schemas mirror `ClientMsg`, and a type test checks that the inferred types match the protocol, so the two can't drift apart.
 - **Test-only time scaling.** The e2e tests need a short quarter. The server reads `SHIP_IT_TIME_SCALE` (for example `0.1`) and applies it only when `NODE_ENV=test`. It scales the durations from `shared/config.ts` at room creation, so the balance numbers still have one source.
 - **Content runs on its own track.** It's validated by the test, not by review. After Task 3 lands the schema and validator, the three content batches (Tasks 24–26) can run in parallel with everything else.
 
@@ -141,13 +141,17 @@ These must be done in order: Tasks 1→2→3 (the shared contract), Tasks 4→5�
 | Mobile diff readability (long TS lines on a 390 px screen) | Medium | `pre-wrap`, a content rule against very long lines, and a phone e2e check for horizontal scroll |
 | `.claude/skills` is edited by accident | Low | It's a Boundaries "Never". It's checked in review |
 
+## Resolved Decisions
+
+These were open questions. The game rules among them are now in `SPEC.md`.
+
+1. **Dependencies:** Add whatever the work needs without asking. The "ask first" rule is removed from SPEC → Boundaries.
+2. **What counts as a leak:** Before the postmortem, no message contains `bug.lines` or `bug.explanation` for any PR, and no message contains anything about the bug in an open PR. The game shows some things on purpose once a PR is resolved: an incident's text when it fires, and the catch toast and bonus. Those are allowed. The leak test in Task 13 enforces exactly this.
+3. **Incidents still pending when the quarter ends:** They fire at once, before the postmortem is built.
+4. **Incident toasts:** They show only the incident text, not which PR caused it.
+5. **"Sorted by damage":** Total value lost, counting outage downtime at $40k per hour. Ties go to the higher severity.
+6. **Spec status:** Approved.
+
 ## Open Questions
 
-These are marked as **Proposed** defaults, and the plan uses them unless you say otherwise.
-
-1. **New dependencies (Boundaries: "ask first").** The listed stack needs some glue packages beyond what the spec names. We'd need `tsx` for the server watch in `npm run dev`, `concurrently` to run Vite and the server together, and `@vitest/coverage-v8` for the 90% gate. We'd also need `@preact/preset-vite`, `typescript-eslint`, `eslint` and `prettier`. Okay to add these as dev dependencies?
-2. **What counts as a leak.** Live incident toasts carry `bug.incident` text, and a "catch" toast or the +$150k bonus shows that a declined PR was buggy. **Proposed:** before the postmortem, no message may contain `bug.lines` or `bug.explanation` for any PR. No message may contain `bug.type`, `severity` or incident text for an unresolved PR. The incident text is allowed once that incident fires.
-3. **Incidents still pending when the quarter ends.** **Proposed:** fire them all right away, before the postmortem is built, so the final numbers include them. This also applies to the PRs that auto-merge at the end.
-4. **Does the incident toast name the PR?** **Proposed:** no. The toast shows only the incident text ("What did we just ship?"), and the postmortem links incidents to PRs.
-5. **"Sorted by damage" in the postmortem.** **Proposed:** sort by total value lost, counting outage downtime at $40k per hour. Ties go to the higher severity.
-6. **Spec status.** `SPEC.md` still says "Draft, awaiting approval", although all its open questions are resolved. Please confirm it's approved so the header can be updated in Task 1.
+None.

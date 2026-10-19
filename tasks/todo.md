@@ -10,7 +10,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 ## Task 1: Project scaffold and toolchain
 
-**Description:** Set up an empty TypeScript project with three areas (`shared`, `server`, `client`) using strict TypeScript. Every npm script from SPEC → Commands should exist and run, even when there's almost nothing for it to do yet. This needs the dependency approval in plan Open Question 1.
+**Description:** Set up an empty TypeScript project with three areas (`shared`, `server`, `client`) using strict TypeScript. Every npm script from SPEC → Commands should exist and run, even when there's almost nothing for it to do yet.
 
 **Acceptance criteria:**
 - [ ] `npm install` works on Node 22, and `engines.node` is set to `>=22`.
@@ -118,7 +118,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 ## Task 6: Tick: spawns, auto-merge, delayed incidents, uptime and quarter end
 
-**Description:** Write `tick(state, now)`. It spawns PRs that are due and auto-merges PRs older than 90 s. It fires due incidents with the effect for their type and severity, applies the uptime formula and the $0 floor (bankruptcy), and ends the quarter at 10:00, when everything is resolved early, or on bankruptcy. Per plan Open Question 3, when the quarter ends it auto-merges any open PRs and fires all pending incidents.
+**Description:** Write `tick(state, now)`. It spawns PRs that are due and auto-merges PRs older than 90 s. It fires due incidents with the effect for their type and severity, applies the uptime formula and the $0 floor (bankruptcy), and ends the quarter at 10:00, when everything is resolved early, or on bankruptcy. Per SPEC → Quarter, when the quarter ends it auto-merges any open PRs and fires all pending incidents.
 
 **Acceptance criteria:**
 - [ ] There's a test for each type × severity cell in the Incidents table, and an uptime test such as 4 h of downtime giving 99.815%.
@@ -178,7 +178,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 ## Task 9: Postmortem report, badges and team stats
 
-**Description:** Write `postmortem(state)`. It builds the six sections in the order the spec gives. "What slipped through" is sorted by damage (plan Open Question 5) and lists the merger or "nobody reviewed it", the comment thread and the pings. The other sections are great catches, right call wrong reason, lost revenue, team stats, the badge and the bankruptcy flag.
+**Description:** Write `postmortem(state)`. It builds the six sections in the order the spec gives. "What slipped through" is sorted by damage (SPEC → Postmortem) and lists the merger or "nobody reviewed it", the comment thread and the pings. The other sections are great catches, right call wrong reason, lost revenue, team stats, the badge and the bankruptcy flag.
 
 **Acceptance criteria:**
 - [ ] There's a test for each badge threshold, including the exact boundary values (99.99%, 99.9%, 99%, 0 breaches and 1 breach).
@@ -226,9 +226,10 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 ## Task 11: WebSocket layer: validation, rate limit, broadcast and tick loop
 
-**Description:** Write `ws.ts`. It parses and validates every `ClientMsg` with hand-written validators and replies `error` to anything invalid. It limits each connection to 10 messages per second. It sends `welcome` with `serverNow`, broadcasts `state`, `event` and `postmortem` to the room, and runs a 250 ms tick for each active room that broadcasts only when something changed.
+**Description:** Write `ws.ts`. It parses and validates every `ClientMsg` with `zod` schemas and replies `error` to anything invalid. It limits each connection to 10 messages per second. It sends `welcome` with `serverNow`, broadcasts `state`, `event` and `postmortem` to the room, and runs a 250 ms tick for each active room that broadcasts only when something changed.
 
 **Acceptance criteria:**
+- [ ] A type test shows the schemas' inferred types match `ClientMsg`.
 - [ ] Malformed JSON, an unknown `t`, wrong field types or extra-long strings each get an `error` reply, and the socket stays open.
 - [ ] The 11th message within one second is dropped with a `RATE_LIMITED` error.
 - [ ] The tick loop stops when a room has no game running, so there are no timers left behind after cleanup.
@@ -271,7 +272,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 **Acceptance criteria:**
 - [ ] Three clients create a room, join, start, merge, decline, comment and ping, and every client receives an identical `postmortem`.
-- [ ] A leak test records every message sent before `postmortem` and checks it against the leak rules (plan Open Question 2).
+- [ ] A leak test records every message sent before `postmortem` and checks it against the leak rule in SPEC → Content rules. It also checks that the allowed exceptions (fired incident text, the catch toast) show up only after their PR is resolved.
 - [ ] Reconnecting with a `playerId` puts the player back in the same seat. When the host disconnects, host passes to the next player, and the rate limit works end to end.
 
 **Verification:**
@@ -471,7 +472,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 **Acceptance criteria:**
 - [ ] A whole quarter can be played with only the keyboard on desktop.
-- [ ] axe (Playwright `@axe-core/playwright` if it's approved; otherwise a manual audit) finds no serious or critical issues.
+- [ ] `@axe-core/playwright` finds no serious or critical issues.
 - [ ] Every emoji-only control has an accessible name.
 
 **Verification:**
