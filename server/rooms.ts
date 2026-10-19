@@ -51,6 +51,8 @@ export interface RoomsOptions {
   newPlayerId?: () => string;
   /** The PR pool every quarter draws from. */
   pool: readonly PullRequest[];
+  /** Fixed seed for every room's PR draw. Test-only: makes e2e quarters repeatable. */
+  roomSeed?: number;
   /** Quarter timing. Defaults to shared/config.ts; the e2e tests pass a scaled copy. */
   timing?: Timing;
 }
@@ -215,7 +217,7 @@ export function createRooms(options: RoomsOptions): Rooms {
         phase: 'lobby',
         quarter: null,
       },
-      rng: createRng(Math.floor(random() * 2 ** 32)),
+      rng: createRng(options.roomSeed ?? Math.floor(random() * 2 ** 32)),
       cleanup: null,
     };
     rooms.set(code, room);
