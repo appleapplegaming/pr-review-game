@@ -1,0 +1,54 @@
+// Every tunable number lives here. Times are milliseconds unless the name says otherwise.
+// Source of truth for the numbers: SPEC.md → Game Rules.
+
+export const config = {
+  // Quarter
+  quarterMs: 600_000, // 10:00 real time
+  spawnWindowMs: 510_000, // PRs spread over the first 8:30
+  spawnJitter: 0.2, // ±20%
+  prTimerMs: 90_000, // auto-merge timer per PR
+  prCount: { base: 8, perPlayer: 4, min: 12, max: 30 }, // clamp(base + perPlayer × players, min, max)
+  cleanShare: 1 / 3, // about a third of each draw is clean
+
+  // Starting state
+  startingValue: 10_000_000,
+
+  // Incidents
+  incidentDelayMs: { min: 4_000, max: 12_000 },
+  catchBonus: 150_000,
+  outage: {
+    minutes: { minor: 30, major: 240, critical: 1440 },
+    valuePerHour: 40_000,
+  },
+  money: { minor: 500_000, major: 2_000_000, critical: 5_000_000 },
+  security: { minor: 1_000_000, major: 3_000_000, critical: 8_000_000 },
+
+  // Uptime and badges
+  quarterMinutes: 129_600, // minutes in a 90-day quarter
+  badges: {
+    fiveNines: { uptime: 0.9999, maxBreaches: 0 },
+    threeNines: { uptime: 0.999, maxBreaches: 1 },
+    businessAsUsual: { uptime: 0.99 },
+  },
+
+  // Comments and pings
+  pingCooldownMs: 20_000,
+  comment: { min: 1, max: 280 },
+
+  // Names and limits
+  name: { min: 1, max: 20 },
+  companyName: { min: 1, max: 40 },
+  rateLimit: { messages: 10, windowMs: 1000 },
+
+  // Server
+  tickMs: 250,
+  roomCleanupMs: 1_800_000, // 30 min after the last player leaves
+
+  // Content validation
+  featureValue: { min: 200_000, max: 2_000_000 },
+  diffLines: { min: 10, max: 40 },
+
+  // Client
+  toastMs: 4000,
+  roomCodeLength: 4,
+} as const;
