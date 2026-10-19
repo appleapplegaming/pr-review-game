@@ -1,8 +1,14 @@
+/* The timer reads as a small ink-outlined pill. */
 .ring,
 .urgent {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  padding: 0.125rem var(--space-2) 0.125rem 0.25rem;
+  border: var(--border-ink-thin);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pop-sm);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   white-space: nowrap;
@@ -19,7 +25,8 @@
 
 .track {
   fill: none;
-  stroke: var(--color-border);
+  stroke: var(--color-ink);
+  stroke-opacity: 0.2;
   stroke-width: 4;
 }
 

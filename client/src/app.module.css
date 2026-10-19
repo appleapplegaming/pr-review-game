@@ -10,10 +10,13 @@
   margin: 0;
 }
 
+/* A sticker-style alert: surface, thin ink outline, small hard shadow. */
 .banner[data-visible='true'] {
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-danger);
+  border: var(--border-ink-thin);
   border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pop-sm);
   color: var(--color-danger);
   font-size: 0.875rem;
   font-weight: 600;
@@ -23,11 +26,37 @@
   margin-left: var(--space-2);
   min-height: 44px;
   padding: 0 var(--space-4);
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius);
-  background: transparent;
+  border: var(--border-ink-thin);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pop-sm);
   color: var(--color-danger);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition:
+    transform 120ms var(--ease-bounce),
+    box-shadow 120ms var(--ease-bounce);
+}
+
+.retry:hover {
+  transform: translate(-1px, -2px) rotate(-1deg);
+  box-shadow: var(--shadow-pop);
+}
+
+.retry:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 var(--color-ink);
+}
+
+.retry:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .retry:hover,
+  .retry:active {
+    transform: none;
+  }
 }

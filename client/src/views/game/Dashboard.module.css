@@ -3,46 +3,61 @@
   gap: var(--space-4);
   padding: var(--space-4);
   background: var(--color-surface);
+  border: var(--border-ink);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
 }
 
 .title {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: 1.125rem;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-2);
   margin: 0;
 }
 
+/* Each stat is a chunky sticker tile: ink outline, hard pop shadow. */
 .stat {
   display: grid;
   gap: 0.25rem;
   min-width: 0;
+  padding: var(--space-2);
+  background: var(--color-bg);
+  border: var(--border-ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop-sm);
 }
 
 .stat dt {
   color: var(--color-muted);
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .stat dd {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
 .stat .value {
-  font-size: 1.5rem;
+  font-size: 1.375rem;
+  line-height: 1.1;
 }
 
 .bankrupt {
   margin: 0;
   color: var(--color-danger);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
 }

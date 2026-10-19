@@ -2,17 +2,32 @@
 :root {
   /* Each colour token holds its light and dark value once; color-scheme picks which applies. */
   color-scheme: light dark;
-  --color-bg: light-dark(#f6f7f9, #14161b);
-  --color-surface: light-dark(#ffffff, #1d2028);
-  --color-text: light-dark(#1a1d23, #eceef2);
-  --color-muted: light-dark(#5b6372, #9aa3b2);
-  --color-border: light-dark(#d8dce3, #3a3f4b);
-  --color-accent: light-dark(#2b5fd9, #7ea6ff);
-  --color-danger: light-dark(#b42318, #ff8a80);
+  /* Cartoon look: cream paper, ink outlines, flat pop colours, hard offset shadows. */
+  --color-bg: light-dark(#fff3d6, #4a3c80);
+  --color-surface: light-dark(#ffffff, #2d2452);
+  --color-text: light-dark(#1b1430, #fff8e7);
+  --color-muted: light-dark(#574b6b, #d6cdee);
+  --color-border: light-dark(#1b1430, #0e0a1c);
+  --color-accent: light-dark(#2350d8, #a9c6ff);
+  --color-danger: light-dark(#c01f17, #ffb0a8);
+  /* Ink draws outlines and the offset "sticker" shadows; pop colours are for decoration only. */
+  --color-ink: light-dark(#1b1430, #0e0a1c);
+  --color-pop-yellow: light-dark(#ffd23f, #e8b923);
+  --color-pop-pink: light-dark(#ff7eb6, #d95c97);
+  --color-pop-green: light-dark(#4cd486, #2fa866);
+  --color-dots: light-dark(#f2dfb0, #54468f);
   --space-2: 0.5rem;
   --space-4: 1rem;
   --space-6: 1.5rem;
-  --radius: 0.5rem;
+  --radius: 0.875rem;
+  --radius-sm: 0.5rem;
+  --radius-pill: 999px;
+  --border-ink: 3px solid var(--color-ink);
+  --border-ink-thin: 2px solid var(--color-ink);
+  --shadow-pop: 4px 4px 0 var(--color-ink);
+  --shadow-pop-sm: 2px 2px 0 var(--color-ink);
+  --shadow-pop-lg: 6px 6px 0 var(--color-ink);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   /* Type scale. */
   --text-xs: 0.8125rem;
   --text-sm: 0.875rem;
@@ -21,7 +36,8 @@
   /* Phone tab bar height, and the same plus the iPhone home-indicator inset. */
   --tabbar-h: 3.5rem;
   --tabbar-total: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Fredoka Variable', 'Comic Neue', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Fredoka Variable', system-ui, sans-serif;
 }
 
 /* An explicit data-theme overrides the OS preference. */
@@ -48,10 +64,27 @@
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background-color: var(--color-bg);
+  /* A faint polka-dot paper texture. */
+  background-image: radial-gradient(var(--color-dots) 2px, transparent 2.5px);
+  background-size: 22px 22px;
   color: var(--color-text);
   font-family: var(--font-body);
   line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+code,
+pre,
+kbd {
+  font-family: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
 /* On a phone, the bars step aside while a text field has focus, so the on-screen keyboard never
@@ -80,11 +113,25 @@ body {
 .btn {
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-accent);
-  border-radius: var(--radius);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-pop);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition:
+    transform 120ms var(--ease-bounce),
+    box-shadow 120ms var(--ease-bounce);
+}
+
+.btn:hover:not(:disabled) {
+  transform: translate(-1px, -2px) rotate(-1deg);
+  box-shadow: var(--shadow-pop-lg);
+}
+
+.btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--color-ink);
 }
 
 .btn-primary {
@@ -93,13 +140,30 @@ body {
 }
 
 .btn-secondary {
-  background: transparent;
-  color: var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .btn:disabled {
   opacity: 0.5;
+  box-shadow: none;
   cursor: not-allowed;
+}
+
+/* Bouncy motion is decoration; drop it for people who ask for less movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
 }
 
 .btn:focus-visible {

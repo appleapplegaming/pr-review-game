@@ -1,14 +1,25 @@
+/* The landing sheet is one big sticker card: surface, ink outline, hard pop shadow. */
 .panel {
   display: grid;
   gap: var(--space-4);
   max-width: 28rem;
   width: 100%;
   margin: 0 auto;
+  padding: var(--space-6);
+  border: var(--border-ink);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pop);
 }
 
 .title {
   margin: 0;
-  font-size: var(--text-xl);
+  font-family: var(--font-display);
+  font-size: clamp(2.25rem, 9vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-shadow: 3px 3px 0 var(--color-pop-yellow);
 }
 
 .lede,
@@ -31,8 +42,9 @@
 .field input {
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-muted);
-  border-radius: var(--radius);
+  border: var(--border-ink-thin);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-pop-sm);
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
@@ -62,15 +74,30 @@
 
 .how {
   color: var(--color-muted);
+  padding: 0 var(--space-4);
+  border: var(--border-ink-thin);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-pop-sm);
 }
 
 .how summary {
   cursor: pointer;
   color: var(--color-text);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+
+.how[open] summary {
+  padding-bottom: var(--space-2);
+}
+
+.how summary:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .how ol {
