@@ -3,8 +3,9 @@
 // and a screen-reader prefix, so the highlight does not rely on colour alone. The lines sit in one
 // <pre>, not a list, so a screen reader does not announce "list item 12 of 40" for every line.
 //
-// Short diffs are open and complete. Long diffs show only the bug lines with 3 lines of context,
-// and a button reveals the rest. `compact` closes the <details> to keep small cards short.
+// Short diffs are open and complete. Long diffs start collapsed (the summary still names the bug
+// line count); opened, they show only the bug lines with 3 lines of context, and a button reveals
+// the rest. `compact` also closes short diffs, to keep small cards short.
 
 import { useState } from 'preact/hooks';
 import { parseDiff, type DiffLineKind } from '../../../../shared/diff';
@@ -66,7 +67,7 @@ export function PostmortemDiff({ diff, bugLines, compact = false }: Props) {
   flushGap(lines.length + 1);
 
   return (
-    <details className={styles.diffBox} open={!compact}>
+    <details className={styles.diffBox} open={!compact && !isLong}>
       <summary className={styles.diffSummary}>
         {diffSummary(lines.length, bugLines.size, excerpt)}
       </summary>
