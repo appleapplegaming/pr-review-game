@@ -59,7 +59,7 @@ Setup (one time, in the Render dashboard):
 5. No environment variables are required. Render sets `PORT` itself, and the server reads it.
 6. Create the service and wait for the first deploy to finish. Then open the `onrender.com` URL.
 
-Alternatively, `render.yaml` at the repo root describes the same service as a Render Blueprint. Create it with New > Blueprint. Auto-deploy is off in the file, so deploys happen when you trigger them or turn auto-deploy on in the dashboard.
+Alternatively, `render.yaml` at the repo root describes the same service as a Render Blueprint. Create it with New > Blueprint. The file sets `autoDeployTrigger: checksPass`, so Render deploys a commit only after the GitHub Actions CI checks (`.github/workflows/ci.yml`) pass. For a service created by hand, choose "After CI checks pass" under Settings > Build & Deploy > Auto-Deploy.
 
 Before a playtest, check the deployed URL from a phone on mobile data: create a room, then join it from a second device with the room code.
 

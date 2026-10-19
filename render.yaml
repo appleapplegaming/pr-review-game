@@ -8,7 +8,8 @@ services:
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /
-    autoDeploy: false
+    # Deploy automatically only once the GitHub CI checks pass.
+    autoDeployTrigger: checksPass
     envVars:
       - key: NODE_ENV
         value: production
