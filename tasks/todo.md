@@ -360,13 +360,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Add a Merge button (one tap) and a Decline ▾ button that opens a `DeclineSheet` with 💸 / 🔓 / 🔥. When the server rejects an action, show "Already merged by Sara". Add the desktop keys: `j`/`k` move through the queue, `m` merges and `d` declines.
 
 **Acceptance criteria:**
-- [ ] Merge takes one click. A decline isn't sent until the player picks a bug type.
-- [ ] When two players act on the same PR, the one who loses the race sees who resolved it.
-- [ ] Keyboard shortcuts don't fire while the player is typing in a comment box.
+- [x] Merge takes one click. A decline isn't sent until the player picks a bug type.
+- [x] When two players act on the same PR, the one who loses the race sees who resolved it.
+- [x] Keyboard shortcuts don't fire while the player is typing in a comment box.
 
 **Verification:**
-- [ ] Manual check: a race between two browsers shows the right message
-- [ ] Build succeeds: `npm run build`
+- [ ] Manual check: a race between two browsers shows the right message (automated Playwright race check passed in both directions; a human check is still open)
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Task 16
 

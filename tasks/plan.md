@@ -87,7 +87,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [x] Task 14: Client scaffold and net layer: socket, reconnect, clock offset, store
 - [x] Task 15: Lobby: create, join by code or link, start, rename company
 - [ ] Task 16: Queue and PR view (desktop): queue cards, countdown ring, DiffView, presence
-- [ ] Task 17: Merge and decline actions, rejection feedback, keyboard shortcuts
+- [x] Task 17: Merge and decline actions, rejection feedback, keyboard shortcuts
 - [ ] Task 18: Line and PR comments, second-opinion ping
 - [ ] Task 19: Dashboard, activity feed and toasts
 

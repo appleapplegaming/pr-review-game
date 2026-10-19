@@ -15,6 +15,7 @@ import { net } from '../../net/live';
 import { serverTime } from '../../net/store';
 import { useStore } from '../../net/use-store';
 import { openQueue } from './queue-rules';
+import { ActionBar } from './ActionBar';
 import { ActivityFeed } from './ActivityFeed';
 import { Dashboard } from './Dashboard';
 import { LineComments } from './LineComments';
@@ -91,6 +92,7 @@ export function GameScreen() {
               players={room.players}
               myId={myId}
               now={now}
+              actionBar={<ActionBar pr={selected} queue={queue} onSelect={setSelectedId} />}
               selectedLine={discussion.selectedLine}
               onLineSelect={discussion.selectLine}
               renderAfterLine={(line) => (
