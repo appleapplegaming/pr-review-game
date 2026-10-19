@@ -74,7 +74,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [ ] Review with a human before the transport work starts
 
 ### Phase 2: Server and realtime (highest risk, so it comes before the UI)
-- [ ] Task 10: Room registry: codes, join and rejoin, host handover, cleanup, play again
+- [x] Task 10: Room registry: codes, join and rejoin, host handover, cleanup, play again
 - [ ] Task 11: WebSocket layer: validation, rate limit, broadcast and tick loop
 - [ ] Task 12: HTTP server: static client, `/r/:code`, WebSocket upgrade, `PORT`
 - [ ] Task 13: Protocol integration tests: full game, leak, reconnect, handover, rate limit

@@ -209,16 +209,16 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `rooms.ts`. It generates 4-letter codes without `I` or `O` and never reuses a live code. It handles create and join, rejoin by `playerId`, and joining mid-quarter. When the host leaves, the player who has been in the room longest becomes host. A room is deleted 30 minutes after its last player disconnects. It also handles the host-only `start`, `rename` and `playAgain`, and gives each new room a random funny company name.
 
 **Acceptance criteria:**
-- [ ] Codes match `^[A-HJ-NP-Z]{4}$`. Joining with an unknown code, or a name that's empty or over 20 characters after trimming, returns an error.
-- [ ] `start`, `rename` and `playAgain` from a player who isn't the host are rejected. After the host leaves, the oldest remaining player becomes host.
-- [ ] Cleanup is tested with a fake clock: the room survives 29:59 after its last disconnect and is gone at 30:00. Any reconnect resets the timer.
+- [x] Codes match `^[A-HJ-NP-Z]{4}$`. Joining with an unknown code, or a name that's empty or over 20 characters after trimming, returns an error.
+- [x] `start`, `rename` and `playAgain` from a player who isn't the host are rejected. After the host leaves, the oldest remaining player becomes host.
+- [x] Cleanup is tested with a fake clock: the room survives 29:59 after its last disconnect and is gone at 30:00. Any reconnect resets the timer.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/rooms.test.ts`
+- [x] Tests pass: `npx vitest run tests/server/rooms.test.ts`
 
 **Dependencies:** Task 9
 
-**Files likely touched:** `server/rooms.ts`, `server/company-names.ts`, `tests/rooms.test.ts`
+**Files likely touched:** `server/rooms.ts`, `server/company-names.ts`, `tests/server/rooms.test.ts`
 
 **Estimated scope:** Medium
 
