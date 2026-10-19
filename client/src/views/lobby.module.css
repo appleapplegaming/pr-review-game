@@ -70,6 +70,49 @@
   gap: var(--space-2);
 }
 
+/* Game length: borderless fieldset, equal-width pills; the checked one fills in. */
+.lengthGroup {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.lengthGroup legend {
+  padding: 0;
+}
+
+.lengthRow {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: var(--space-2);
+}
+
+.lengthOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.lengthOption input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.lengthOption:has(input:checked) {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.lengthOption:has(input:focus-visible) {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .linkField {
   min-height: 44px;
   padding: var(--space-2) var(--space-4);

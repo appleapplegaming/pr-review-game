@@ -150,11 +150,11 @@ export function Lobby({ room }: { room: PublicRoomState }) {
               </p>
             )}
           </form>
-          <fieldset className={styles.renameForm}>
+          <fieldset className={`${styles.renameForm} ${styles.lengthGroup}`}>
             <legend className={styles.label}>Game length</legend>
-            <div className={styles.shareRow}>
+            <div className={styles.lengthRow}>
               {config.durationMinutes.options.map((option) => (
-                <label key={option} className="btn btn-secondary">
+                <label key={option} className={`btn btn-secondary ${styles.lengthOption}`}>
                   <input
                     type="radio"
                     name="game-length"
@@ -162,7 +162,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
                     checked={minutes === option}
                     onChange={() => setMinutes(option)}
                     disabled={!canSend}
-                  />{' '}
+                  />
                   {option} min
                 </label>
               ))}
