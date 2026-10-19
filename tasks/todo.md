@@ -450,17 +450,17 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Render the `postmortem` report in the spec's section order. Missed bugs show their diffs with the bug lines highlighted. A bankrupt company gets a special banner. Only the host sees the **Play again** button, which sends everyone back to the lobby.
 
 **Acceptance criteria:**
-- [ ] Every missed bug shows the highlighted line, the explanation, the incident text, "Merged by X" or "Auto-merged: nobody reviewed it", and the comments and pings on it.
-- [ ] Sections that have nothing in them show a friendly empty state instead of disappearing.
-- [ ] Play again sends every client to the lobby with the same players.
+- [x] Every missed bug shows the highlighted line, the explanation, the incident text, "Merged by X" or "Auto-merged: nobody reviewed it", and the comments and pings on it.
+- [x] Sections that have nothing in them show a friendly empty state instead of disappearing.
+- [x] Play again sends every client to the lobby with the same players.
 
 **Verification:**
 - [ ] Manual check: a quarter played with some deliberate misses produces a correct postmortem
-- [ ] Build succeeds: `npm run build`
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Task 19
 
-**Files likely touched:** `client/src/views/postmortem.tsx`, `client/src/views/postmortem.module.css`, `client/src/components/diff-view.tsx`
+**Files likely touched:** `client/src/views/postmortem/` (as built; DiffView left unchanged, the postmortem has its own highlighted diff)
 
 **Estimated scope:** Small–Medium
 
