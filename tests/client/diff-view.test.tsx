@@ -87,4 +87,14 @@ describe('DiffView', () => {
     expect(pressed).toBeLessThan(html.indexOf('data-line="4"'));
     expect(html.match(/aria-pressed="true"/g)?.length).toBe(1);
   });
+
+  it('has exactly one tab stop (roving tabindex), on the selected line when there is one', () => {
+    const html = renderToStaticMarkup(
+      <DiffView diff={DIFF} selectedLine={3} onLineSelect={() => {}} />,
+    );
+    expect(html.match(/tabindex="0"/g)?.length).toBe(1);
+    expect(html.match(/tabindex="-1"/g)?.length).toBe(6);
+    expect(html.indexOf('tabindex="0"')).toBeGreaterThan(html.indexOf('data-line="3"'));
+    expect(html.indexOf('tabindex="0"')).toBeLessThan(html.indexOf('data-line="4"'));
+  });
 });

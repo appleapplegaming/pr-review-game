@@ -24,7 +24,14 @@ export function eventText(event: GameEvent): string {
         ? `Auto-merged: ${event.prTitle}`
         : `${event.byName} merged ${event.prTitle}`;
     case 'decline':
-      return `${event.byName} declined ${event.prTitle} as ${BUG_LABEL[event.bugType]}`;
+      // The verdict is the only outcome revealed. The real bug type stays hidden until the postmortem.
+      return event.verdict === 'clean'
+        ? `${event.byName} declined ${event.prTitle} as ${BUG_LABEL[event.bugType]}: no bug there, its value is lost`
+        : `${event.byName} declined ${event.prTitle} as ${BUG_LABEL[event.bugType]}: a real bug, but no bonus`;
+    case 'comment':
+      return event.onLine
+        ? `${event.byName} commented on a line in ${event.prTitle}`
+        : `${event.byName} commented on ${event.prTitle}`;
     case 'catch':
       return `${event.byName} caught ${BUG_LABEL[event.bugType]} in ${event.prTitle}: +${formatMoney(event.bonus)}`;
   }

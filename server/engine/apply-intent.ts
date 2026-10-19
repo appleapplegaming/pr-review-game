@@ -132,7 +132,16 @@ export function applyIntent(
   if (intent.t === 'comment') {
     const result = addComment(quarter, pr, player, intent.line, intent.text, now);
     if (!result.ok) return result;
-    return { ok: true, state: withQuarter(state, result.quarter), events: [] };
+    const event: GameEvent = {
+      kind: 'comment',
+      prId: pr.pr.id,
+      prTitle: pr.pr.title,
+      by: playerId,
+      byName: player.name,
+      onLine: intent.line !== null,
+      at: now,
+    };
+    return { ok: true, state: withQuarter(state, result.quarter), events: [event] };
   }
 
   if (intent.t === 'ping') {
@@ -192,6 +201,13 @@ export function applyIntent(
   return {
     ok: true,
     state: withQuarter(state, next),
-    events: [{ kind: 'decline', ...base, bugType: intent.bugType }],
+    events: [
+      {
+        kind: 'decline',
+        ...base,
+        bugType: intent.bugType,
+        verdict: bug === null ? 'clean' : 'wrong-reason',
+      },
+    ],
   };
 }

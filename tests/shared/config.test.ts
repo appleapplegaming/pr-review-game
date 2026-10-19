@@ -40,6 +40,8 @@ describe('config matches SPEC Game Rules', () => {
     expect(config.diffLines).toEqual({ min: 10, max: 40 });
     expect(config.contentLineMax).toBe(70);
     expect(config.toastMs).toBe(4000);
+    expect(config.toastIncidentMs).toBe(8000);
+    expect(config.toastMax).toBe(3);
     expect(config.roomCodeLength).toBe(4);
   });
 });

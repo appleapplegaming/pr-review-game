@@ -418,9 +418,10 @@ describe('toPublicState: comments and pings made through the real engine', () =>
     expect(publicState.prs.find((p) => p.id === 'merged-security')?.comments).toHaveLength(1);
     expect(publicState.prs.find((p) => p.id === 'merged-security')?.highlighted).toBe(false);
 
-    expect(events).toEqual([
+    expect(events.map((e) => e.kind)).toEqual(['comment', 'comment', 'ping', 'comment']);
+    expect(events).toContainEqual(
       expect.objectContaining({ kind: 'ping', prId: 'open-money', playerName: 'Sara' }),
-    ]);
+    );
     for (const output of [JSON.stringify(publicState), JSON.stringify(events)]) {
       expect(output).not.toContain('SECRET');
       expect(output).not.toContain('"bug"');

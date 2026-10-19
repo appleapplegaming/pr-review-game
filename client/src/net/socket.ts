@@ -57,6 +57,8 @@ export interface SocketClient {
   start(): void;
   /** Closes for good. No reconnect follows. */
   stop(): void;
+  /** Tries to connect now instead of waiting for the backoff timer. Also revives a stopped client. */
+  retry(): void;
   /** Sends a message. Returns false, and sends nothing, when the socket is not open. */
   send(msg: ClientMsg): boolean;
 }
@@ -212,6 +214,18 @@ export function createSocketClient(options: SocketClientOptions): SocketClient {
       rejoining = false;
       socket?.transport.close();
       dispatch({ type: 'conn', conn: 'closed' });
+    },
+
+    retry() {
+      if (!started || current !== null) return;
+      if (reconnectTimer !== null) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
+      stopped = false;
+      failures = 0;
+      dispatch({ type: 'conn', conn: 'connecting' });
+      open();
     },
 
     send(msg) {

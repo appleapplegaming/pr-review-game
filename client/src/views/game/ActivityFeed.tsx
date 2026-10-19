@@ -22,7 +22,7 @@ export function ActivityFeed() {
           Nothing has happened yet. Merges, pings and incidents show up here.
         </p>
       ) : (
-        <ol className={styles.list}>
+        <ol className={styles.list} tabIndex={0} aria-label="Activity entries, newest first">
           {newestFirst.map((entry) => (
             <li key={entry.id} className={styles.item}>
               {startedAt !== null && (

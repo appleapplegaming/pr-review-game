@@ -6,6 +6,8 @@
   font-variant-numeric: tabular-nums;
   font-weight: 600;
   white-space: nowrap;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .svg {
@@ -30,6 +32,31 @@
 
 .urgent .arc {
   stroke: var(--color-danger);
+  stroke-width: 6;
+}
+
+.urgent .track {
+  stroke-width: 6;
+}
+
+/* Text cue so urgency never rests on colour alone. */
+.cue {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .urgent .svg {
+    animation: ring-pulse 1s ease-in-out infinite;
+  }
+}
+
+@keyframes ring-pulse {
+  50% {
+    opacity: 0.55;
+  }
 }
 
 .urgent .label {

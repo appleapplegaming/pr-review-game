@@ -54,6 +54,8 @@ export const config = {
 
   // Client
   toastMs: 4000,
+  toastIncidentMs: 8000, // incident toasts stay longer: they matter more and are the ones to read
+  toastMax: 3, // toasts shown at once; the rest collapse into "+N more"
   roomCodeLength: 4,
   reconnectBaseMs: 500, // first retry ceiling after a drop; doubles per failed attempt
   reconnectMaxMs: 15_000, // cap on the retry ceiling

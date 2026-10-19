@@ -11,9 +11,10 @@
 //  - Task 18 comments: PrView `prComments` and the DiffView hooks (`onLineSelect`, `renderAfterLine`).
 //  - Toasts are mounted once by app.tsx, not here.
 
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { useSyncExternalStore } from 'preact/compat';
 import { config } from '../../../../shared/config';
+import { formatMoney } from '../../../../shared/money';
 import { net } from '../../net/live';
 import { serverTime } from '../../net/store';
 import { useMediaQuery } from '../../net/use-media';
@@ -27,6 +28,7 @@ import { PrComments } from './PrComments';
 import { PrView } from './PrView';
 import { Queue } from './Queue';
 import { TabBar } from './TabBar';
+import { formatClock, timeLeftMs } from './quarter-time';
 import { commentsOn } from './comment-rules';
 import { pingTracker } from './ping-dot';
 import { keysActive, pingDotVisible, type PhoneTab } from './tab-rules';
@@ -57,6 +59,14 @@ export function GameScreen() {
     return () => clearInterval(timer);
   }, []);
 
+  // Set when a card is chosen, so focus follows the PR once the PR tab is on screen (phone).
+  const focusPrAfterOpen = useRef(false);
+  useEffect(() => {
+    if (!focusPrAfterOpen.current || wide || tab !== 'pr') return;
+    focusPrAfterOpen.current = false;
+    document.querySelector<HTMLElement>('#pr-title')?.focus();
+  }, [tab, wide, selectedId]);
+
   const queue = room === null ? [] : openQueue(room.prs);
   // Keep the chosen PR even after it resolves (it shows the result). Fall back to the top of the
   // queue when nothing is chosen or the chosen PR has left the room.
@@ -81,6 +91,7 @@ export function GameScreen() {
   // Choosing a card in the queue opens its PR. On a phone that means switching to the PR tab.
   function openPr(prId: string) {
     setSelectedId(prId);
+    focusPrAfterOpen.current = true;
     setTab('pr');
   }
 
@@ -91,6 +102,18 @@ export function GameScreen() {
         <h1 id="game-title" className={styles.title}>
           {room.companyName}
         </h1>
+        {/* Phone only: value and clock stay in view on every tab. Reads the shared `now` ticker. */}
+        <p className={styles.strip}>
+          <span>
+            <span className={styles.stripLabel}>Value </span>
+            {formatMoney(room.metrics.value)}
+          </span>
+          <span aria-hidden="true">|</span>
+          <span>
+            <span className={styles.stripLabel}>Time left </span>
+            {room.endsAt === null ? '—' : formatClock(timeLeftMs(room.endsAt, now))}
+          </span>
+        </p>
       </header>
 
       <div className={styles.columns} data-tab={tab}>
@@ -106,11 +129,10 @@ export function GameScreen() {
         </aside>
 
         <section className={styles.review} aria-label="Pull request">
-          {selected === null ? (
-            <p role="status" className={styles.muted}>
-              Select a PR from the queue to review it.
-            </p>
-          ) : (
+          <div role="status" className={styles.muted}>
+            {selected === null ? 'Select a PR from the queue to review it.' : null}
+          </div>
+          {selected === null ? null : (
             <PrView
               pr={selected}
               players={room.players}

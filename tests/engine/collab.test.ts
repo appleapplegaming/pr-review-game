@@ -144,7 +144,17 @@ describe('comments', () => {
       },
     ]);
     expect(quarterOf(result.state).nextId).toBe(2);
-    expect(result.events).toEqual([]);
+    expect(result.events).toEqual([
+      {
+        kind: 'comment',
+        prId: 'p1',
+        prTitle: 'PR p1',
+        by: SARA.id,
+        byName: 'Sara',
+        onLine: false,
+        at: NOW + 5_000,
+      },
+    ]);
   });
 
   it('accepts a comment on a diff line that exists', () => {

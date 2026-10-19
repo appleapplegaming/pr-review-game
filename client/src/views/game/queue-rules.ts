@@ -50,3 +50,9 @@ export function viewerNames(
   }
   return names;
 }
+
+/** Visible comment count: "No comments", "1 comment", "2 comments". */
+export function commentLabel(count: number): string {
+  if (count === 0) return 'No comments';
+  return count === 1 ? '1 comment' : `${count} comments`;
+}

@@ -15,6 +15,23 @@
   overflow-wrap: anywhere;
 }
 
+.paused {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.paused:empty {
+  display: none;
+}
+
+.sheetHint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;
@@ -101,8 +118,34 @@
     position: relative;
   }
 
+  .bar {
+    gap: var(--space-1, 0.25rem);
+  }
+
+  /* One compact row: 44px targets, and the notices stay small so the bar barely grows. */
+  .notice,
+  .paused {
+    padding: 0.125rem var(--space-2);
+    font-size: 0.8125rem;
+    line-height: 1.25;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .paused {
+    padding: 0;
+  }
+
   .buttons {
     flex-wrap: nowrap;
+  }
+
+  .merge,
+  .decline {
+    min-height: 48px;
   }
 
   .merge,

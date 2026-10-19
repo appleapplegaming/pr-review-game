@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { config } from '../../shared/config';
 import {
   codeFromPath,
+  filterCodeInput,
+  isRoomPath,
   isValidCode,
   normalizeCode,
   roomLink,
@@ -146,5 +148,21 @@ describe('screenFor', () => {
     expect(screenFor(stateWith({ room: room({ phase: 'ended' }), postmortem: false }))).toBe(
       'postmortem',
     );
+  });
+});
+
+describe('code input and link helpers', () => {
+  it('filters typing to allowed uppercase letters and the configured length', () => {
+    expect(filterCodeInput('ab-io1c')).toBe('ABC');
+    expect(filterCodeInput('abcdefgh')).toHaveLength(config.roomCodeLength);
+  });
+
+  it('recognises /r/ paths, valid or not', () => {
+    expect(isRoomPath('/r/IOIO')).toBe(true);
+    expect(isRoomPath('/')).toBe(false);
+  });
+
+  it('asks for a name in plain words when it is empty', () => {
+    expect(validateName('  ')).toEqual({ ok: false, message: 'Enter your name' });
   });
 });

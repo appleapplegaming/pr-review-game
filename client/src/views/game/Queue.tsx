@@ -3,7 +3,7 @@
 
 import type { PublicPlayer, PublicPr } from '../../../../shared/types';
 import { CountdownRing } from '../../components/countdown-ring';
-import { countdown, viewerNames } from './queue-rules';
+import { commentLabel, countdown, viewerNames } from './queue-rules';
 import styles from './queue.module.css';
 
 export interface QueueProps {
@@ -16,59 +16,55 @@ export interface QueueProps {
 }
 
 export function Queue({ prs, players, myId, now, selectedId, onSelect }: QueueProps) {
-  if (prs.length === 0) {
-    return (
-      <p role="status" className={styles.empty}>
-        No PRs are waiting for review right now.
-      </p>
-    );
-  }
+  // The status region is always mounted, so screen readers catch the empty message when it appears.
   return (
-    <ul className={styles.list} aria-label="Review queue">
-      {prs.map((pr) => {
-        const timer = countdown({ expiresAt: pr.expiresAt, spawnAt: pr.spawnAt, now });
-        const others = viewerNames(pr.viewers, players, myId);
-        const selected = pr.id === selectedId;
-        return (
-          <li key={pr.id}>
-            <button
-              type="button"
-              className={selected ? styles.cardSelected : styles.card}
-              aria-current={selected ? 'true' : undefined}
-              onClick={() => onSelect(pr.id)}
-            >
-              <span className={styles.title}>{pr.title}</span>
-              <span className={styles.area}>{pr.area}</span>
-              <span className={styles.footer}>
-                <CountdownRing
-                  fraction={timer.fraction}
-                  label={timer.label}
-                  urgent={timer.urgent}
-                />
-                <span className={styles.signals}>
-                  {others.length > 0 && (
-                    <span className={styles.viewers}>
-                      <span aria-hidden="true">👀</span>
-                      <span className={styles.sr}>Viewed by </span> {others.join(', ')}
-                    </span>
-                  )}
-                  <span>
-                    <span aria-hidden="true">💬</span>
-                    <span className={styles.sr}>Comments: </span>
-                    {pr.comments.length}
+    <>
+      <div role="status" className={styles.empty}>
+        {prs.length === 0 ? 'No PRs are waiting for review right now.' : null}
+      </div>
+      {prs.length > 0 && (
+        <ul className={styles.list} aria-label="Review queue">
+          {prs.map((pr) => {
+            const timer = countdown({ expiresAt: pr.expiresAt, spawnAt: pr.spawnAt, now });
+            const others = viewerNames(pr.viewers, players, myId);
+            const selected = pr.id === selectedId;
+            return (
+              <li key={pr.id}>
+                <button
+                  type="button"
+                  className={selected ? styles.cardSelected : styles.card}
+                  aria-current={selected ? 'true' : undefined}
+                  onClick={() => onSelect(pr.id)}
+                >
+                  <span className={styles.timer}>
+                    <CountdownRing
+                      fraction={timer.fraction}
+                      label={timer.label}
+                      urgent={timer.urgent}
+                    />
                   </span>
-                  {pr.highlighted && (
-                    <span className={styles.highlight}>
-                      <span aria-hidden="true">🙋</span>
-                      <span className={styles.sr}>Second opinion requested</span>
-                    </span>
-                  )}
-                </span>
-              </span>
-            </button>
-          </li>
-        );
-      })}
-    </ul>
+                  <span className={styles.title}>{pr.title}</span>
+                  <span className={styles.area}>{pr.area}</span>
+                  <span className={styles.signals}>
+                    <span>{commentLabel(pr.comments.length)}</span>
+                    {pr.highlighted && (
+                      <span className={styles.highlight}>
+                        Second opinion<span className="sr-only"> requested</span>
+                      </span>
+                    )}
+                    {others.length > 0 && (
+                      <span className={styles.viewers}>
+                        <span aria-hidden="true">👀</span>
+                        <span className={styles.sr}>Viewed by </span> {others.join(', ')}
+                      </span>
+                    )}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </>
   );
 }

@@ -163,15 +163,15 @@ describe('CommentBox', () => {
 });
 
 describe('PingButton', () => {
-  it('is disabled and shows the seconds left during the cooldown', () => {
+  it('is aria-disabled and shows the seconds left during the cooldown', () => {
     const html = renderToStaticMarkup(<PingButton cooldownLeftMs={12_400} onPing={() => true} />);
-    expect(html).toMatch(/<button[^>]*disabled/);
+    expect(html).toMatch(/<button[^>]*aria-disabled="true"/);
     expect(html).toContain('13 s');
   });
 
   it('is enabled when the cooldown is over', () => {
     const html = renderToStaticMarkup(<PingButton cooldownLeftMs={0} onPing={() => true} />);
-    expect(html).not.toMatch(/<button[^>]*disabled/);
+    expect(html).not.toMatch(/<button[^>]*aria-disabled="true"/);
     expect(html).toContain('Second opinion?');
   });
 
@@ -179,7 +179,7 @@ describe('PingButton', () => {
     const resolved = renderToStaticMarkup(
       <PingButton cooldownLeftMs={0} disabled onPing={() => true} />,
     );
-    expect(resolved).toMatch(/<button[^>]*disabled/);
+    expect(resolved).toMatch(/<button[^>]*aria-disabled="true"/);
   });
 });
 
@@ -242,7 +242,7 @@ describe('PrComments', () => {
         onSubmit={() => true}
       />,
     );
-    expect(html).toMatch(/<button[^>]*disabled/);
+    expect(html).toMatch(/<button[^>]*aria-disabled="true"/);
   });
 });
 

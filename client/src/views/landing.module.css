@@ -89,3 +89,48 @@
   color: var(--color-danger);
   font-weight: 600;
 }
+
+.how {
+  color: var(--color-muted);
+}
+
+.how summary {
+  cursor: pointer;
+  color: var(--color-text);
+  font-weight: 600;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.how ol {
+  margin: 0;
+  padding-left: var(--space-6);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.notice {
+  margin: 0;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.connRow {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field .error {
+  font-size: 0.875rem;
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}

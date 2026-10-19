@@ -123,3 +123,11 @@ describe('viewerNames', () => {
     expect(viewerNames(['p1'], players, 'p1')).toEqual([]);
   });
 });
+
+import { commentLabel } from '../../client/src/views/game/queue-rules';
+
+describe('commentLabel', () => {
+  it('spells out the count', () => {
+    expect([0, 1, 2].map(commentLabel)).toEqual(['No comments', '1 comment', '2 comments']);
+  });
+});

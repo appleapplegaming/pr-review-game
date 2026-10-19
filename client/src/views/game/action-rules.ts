@@ -100,3 +100,22 @@ export function nextSheetChoice(index: number, count: number, backwards: boolean
   if (index < 0 || index >= count) return backwards ? count - 1 : 0;
   return backwards ? (index - 1 + count) % count : (index + 1) % count;
 }
+
+/** Why merge and decline are paused, or '' when they are not. Shown beside the buttons. */
+export function pausedReason(conn: ConnState): string {
+  switch (conn) {
+    case 'open':
+      return '';
+    case 'closed':
+      return 'Disconnected: merge and decline are paused';
+    default:
+      return 'Reconnecting: merge and decline are paused';
+  }
+}
+
+/** One line under the decline sheet title: what a decline costs or earns. Matches SPEC.md. */
+export const DECLINE_HINT =
+  'Right type on a buggy PR: +$150k. Wrong type: no bonus. A clean PR declined: its value is lost.';
+
+/** How long an armed merge waits for its second tap on a touch screen. */
+export const MERGE_ARM_MS = 4000;

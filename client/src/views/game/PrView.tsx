@@ -82,6 +82,7 @@ export function PrView({
           {open ? (
             <CountdownRing fraction={timer.fraction} label={timer.label} urgent={timer.urgent} />
           ) : null}
+          {open && <p className={styles.viewers}>Auto-merges when the timer reaches 0:00</p>}
           {others.length > 0 && (
             <p className={styles.viewers}>
               <span aria-hidden="true">👀</span> {others.join(', ')}{' '}
@@ -91,7 +92,9 @@ export function PrView({
         </div>
       </header>
 
-      {!open && <Resolution pr={pr} />}
+      <p role="status" className={styles.resolution}>
+        {open ? '' : resolutionText(pr)}
+      </p>
 
       <p className={styles.description}>{pr.description}</p>
 
@@ -112,18 +115,13 @@ export function PrView({
   );
 }
 
-function Resolution({ pr }: { pr: PublicPr }) {
+function resolutionText(pr: PublicPr): string {
   const r = pr.resolution;
-  let text = pr.status === 'merged' ? 'Merged.' : 'Declined.';
   if (r?.kind === 'merged') {
-    text =
-      r.byName !== null ? `Merged by ${r.byName}.` : 'Merged automatically when the timer ran out.';
-  } else if (r?.kind === 'declined') {
-    text = `Declined by ${r.byName}.`;
+    return r.byName !== null
+      ? `Merged by ${r.byName}.`
+      : 'Merged automatically when the timer ran out.';
   }
-  return (
-    <p role="status" className={styles.resolution}>
-      {text}
-    </p>
-  );
+  if (r?.kind === 'declined') return `Declined by ${r.byName}.`;
+  return pr.status === 'merged' ? 'Merged.' : 'Declined.';
 }

@@ -8,6 +8,7 @@ import {
   neighbourPrId,
   shortcutFor,
   nextSheetChoice,
+  pausedReason,
 } from '../../client/src/views/game/action-rules';
 
 function pr(id: string, status: PublicPr['status'] = 'open'): Pick<PublicPr, 'id' | 'status'> {
@@ -154,5 +155,13 @@ describe('nextSheetChoice', () => {
 
   it('returns -1 when the sheet has no choices', () => {
     expect(nextSheetChoice(0, 0, false)).toBe(-1);
+  });
+});
+
+describe('pausedReason', () => {
+  it('is empty while connected and explains the pause otherwise', () => {
+    expect(pausedReason('open')).toBe('');
+    expect(pausedReason('reconnecting')).toBe('Reconnecting: merge and decline are paused');
+    expect(pausedReason('closed')).toMatch(/Disconnected/);
   });
 });

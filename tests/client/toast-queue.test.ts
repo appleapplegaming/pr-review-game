@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { QueuedEvent } from '../../client/src/net/store';
-import { addToasts, liveToasts } from '../../client/src/views/game/toast-queue';
+import {
+  addToasts,
+  holdToasts,
+  liveToasts,
+  visibleToasts,
+} from '../../client/src/views/game/toast-queue';
 
 const incident = (id: number, text: string): QueuedEvent => ({
   id,
@@ -46,5 +51,40 @@ describe('liveToasts', () => {
     const early = addToasts([], [incident(1, 'A')], 0, 4_000);
     const both = addToasts(early, [incident(2, 'B')], 3_000, 4_000);
     expect(liveToasts(both, 4_500).map((t) => t.id)).toEqual([2]);
+  });
+});
+
+describe('incident lifetime', () => {
+  it('keeps incident toasts longer than the rest', () => {
+    const merge: QueuedEvent = {
+      id: 2,
+      event: { kind: 'decline', prId: 'p', title: 'T', by: 'x', at: 0 } as never,
+    };
+    const toasts = addToasts([], [incident(1, 'A'), merge], 0, 4_000, 8_000);
+    expect(toasts.map((t) => t.dueAt)).toEqual([8_000, 4_000]);
+  });
+});
+
+describe('holdToasts', () => {
+  it('pushes every due time back', () => {
+    const toasts = addToasts([], [incident(1, 'A')], 0, 4_000);
+    expect(holdToasts(toasts, 250)[0]?.dueAt).toBe(4_250);
+  });
+});
+
+describe('visibleToasts', () => {
+  const many = addToasts(
+    [],
+    [1, 2, 3, 4, 5].map((n) => incident(n, String(n))),
+    0,
+    4_000,
+  );
+  it('shows at most max and counts the rest', () => {
+    const { shown, hidden } = visibleToasts(many, 3);
+    expect(shown.map((t) => t.id)).toEqual([1, 2, 3]);
+    expect(hidden).toBe(2);
+  });
+  it('shows everything when it fits', () => {
+    expect(visibleToasts(many.slice(0, 2), 3).hidden).toBe(0);
   });
 });

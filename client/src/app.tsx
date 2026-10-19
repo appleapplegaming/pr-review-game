@@ -2,9 +2,9 @@
 // or postmortem. Each screen lives in its own file, so tasks can work on them in parallel.
 
 import { useStore } from './net/use-store';
-import type { ConnState } from './net/store';
+import { CONN_COPY } from './views/conn-copy';
 import { screenFor } from './routing';
-import { codeFromPath } from './views/lobby-rules';
+import { codeFromPath, isRoomPath } from './views/lobby-rules';
 import { Landing } from './views/landing';
 import { Lobby } from './views/lobby';
 import { GameScreen } from './views/game/GameScreen';
@@ -12,25 +12,20 @@ import { PostmortemScreen } from './views/postmortem/PostmortemScreen';
 import { Toasts } from './views/game/Toasts';
 import styles from './app.module.css';
 
-const LABELS: Record<ConnState, string> = {
-  connecting: 'Connecting…',
-  open: 'Connected',
-  reconnecting: 'Reconnecting…',
-  closed: 'Disconnected',
-};
-
 export function App() {
   const conn = useStore((s) => s.conn);
   const screen = useStore(screenFor);
   const room = useStore((s) => s.room);
   const initialCode = codeFromPath(window.location.pathname);
+  const linkInvalid = initialCode === null && isRoomPath(window.location.pathname);
 
   return (
     <main className={styles.shell}>
-      <p className={styles.status} role="status">
-        {LABELS[conn]}
-      </p>
-      {screen === 'landing' && <Landing initialCode={initialCode} />}
+      {/* One always-rendered live region. It has text, and shows, only while not connected. */}
+      <div role="status" className={styles.banner} data-visible={conn !== 'open'}>
+        {conn !== 'open' && <span>{CONN_COPY[conn].label}</span>}
+      </div>
+      {screen === 'landing' && <Landing initialCode={initialCode} linkInvalid={linkInvalid} />}
       {screen === 'lobby' && room !== null && <Lobby room={room} />}
       {screen === 'game' && <GameScreen />}
       {screen === 'postmortem' && <PostmortemScreen />}

@@ -13,12 +13,16 @@ import type { BugType, PublicPr } from '../../../../shared/types';
 import { net } from '../../net/live';
 import { store } from '../../net/store';
 import { useStore } from '../../net/use-store';
+import { useMediaQuery } from '../../net/use-media';
 import {
+  DECLINE_HINT,
   DECLINE_OPTIONS,
+  MERGE_ARM_MS,
   canAct,
   errorNotice,
   isTypingTarget,
   neighbourPrId,
+  pausedReason,
   nextSheetChoice,
   shortcutFor,
   type Baseline,
@@ -39,6 +43,8 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
   const error = useStore((s) => s.error);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [baseline, setBaseline] = useState<Baseline | null>(null);
+  const [armed, setArmed] = useState(false);
+  const coarse = useMediaQuery('(pointer: coarse)');
   const sheetRef = useRef<HTMLDivElement>(null);
   const declineRef = useRef<HTMLButtonElement>(null);
 
@@ -52,7 +58,15 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
   // so an error only shows once, for the action that caused it.
   useEffect(() => {
     setBaseline({ prId: pr.id, seq: store.getState().errorSeq });
+    setArmed(false);
   }, [pr.id]);
+
+  // An armed merge (touch screens) reverts if the second tap does not come.
+  useEffect(() => {
+    if (!armed) return;
+    const timer = setTimeout(() => setArmed(false), MERGE_ARM_MS);
+    return () => clearTimeout(timer);
+  }, [armed]);
 
   function send(prId: string, msg: ClientMsg): void {
     setBaseline({ prId, seq: store.getState().errorSeq });
@@ -61,6 +75,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
 
   function merge(): void {
     if (!latest.current.enabled) return;
+    setArmed(false);
     send(latest.current.pr.id, { t: 'merge', prId: latest.current.pr.id });
   }
 
@@ -84,6 +99,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
       switch (action.kind) {
         case 'next':
         case 'prev': {
+          if (!current.keysActive) return;
           const id = neighbourPrId(current.queue, current.pr.id, action.kind === 'next' ? 1 : -1);
           if (id !== null && id !== current.pr.id) current.onSelect(id);
           break;
@@ -129,7 +145,16 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
     choices[next]?.focus();
   }
 
+  function onMergeClick(): void {
+    if (coarse && !armed) {
+      setArmed(true);
+      return;
+    }
+    merge();
+  }
+
   const notice = errorNotice(error, baseline, pr.id);
+  const paused = pr.status === 'open' ? pausedReason(conn) : '';
   if (pr.status !== 'open' && notice === null) return null;
 
   return (
@@ -141,9 +166,22 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
       )}
 
       {pr.status === 'open' && (
+        <p id="action-paused" role="status" className={styles.paused}>
+          {paused}
+        </p>
+      )}
+
+      {pr.status === 'open' && (
         <div className={styles.buttons}>
-          <button type="button" className={styles.merge} disabled={!enabled} onClick={merge}>
-            Merge <kbd className={styles.key}>m</kbd>
+          <button
+            type="button"
+            className={styles.merge}
+            disabled={!enabled}
+            aria-describedby={paused !== '' ? 'action-paused' : undefined}
+            onClick={onMergeClick}
+          >
+            {armed ? 'Tap again to merge' : 'Merge'}
+            {!coarse && <kbd className={styles.key}>m</kbd>}
           </button>
 
           <div className={styles.declineWrap}>
@@ -152,11 +190,12 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
               ref={declineRef}
               className={styles.decline}
               disabled={!enabled}
+              aria-describedby={paused !== '' ? 'action-paused' : undefined}
               aria-expanded={sheetOpen}
               aria-controls="decline-sheet"
               onClick={() => setSheetOpen((open) => !open)}
             >
-              Decline ▾ <kbd className={styles.key}>d</kbd>
+              Decline ▾{!coarse && <kbd className={styles.key}>d</kbd>}
             </button>
 
             {sheetOpen && (
@@ -169,6 +208,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
                 onKeyDown={trapTab}
               >
                 <p className={styles.sheetTitle}>What is wrong with it?</p>
+                <p className={styles.sheetHint}>{DECLINE_HINT}</p>
                 {DECLINE_OPTIONS.map((option) => (
                   <button
                     key={option.bugType}

@@ -57,9 +57,43 @@ describe('eventText', () => {
       by: 'a',
       byName: 'Sara',
       bugType: 'security',
+      verdict: 'clean',
       at: 1,
     };
-    expect(eventText(event)).toBe('Sara declined Add refund endpoint as a security bug');
+    expect(eventText(event)).toBe(
+      'Sara declined Add refund endpoint as a security bug: no bug there, its value is lost',
+    );
+  });
+
+  it('phrases a wrong-reason decline without revealing the real bug type', () => {
+    const event: GameEvent = {
+      kind: 'decline',
+      prId: 'p1',
+      prTitle: 'Add refund endpoint',
+      by: 'a',
+      byName: 'Sara',
+      bugType: 'security',
+      verdict: 'wrong-reason',
+      at: 1,
+    };
+    expect(eventText(event)).toBe(
+      'Sara declined Add refund endpoint as a security bug: a real bug, but no bonus',
+    );
+  });
+
+  it('phrases comments without any comment text', () => {
+    const base = {
+      kind: 'comment' as const,
+      prId: 'p1',
+      prTitle: 'Add refund endpoint',
+      by: 'a',
+      byName: 'Sara',
+      at: 1,
+    };
+    expect(eventText({ ...base, onLine: true })).toBe(
+      'Sara commented on a line in Add refund endpoint',
+    );
+    expect(eventText({ ...base, onLine: false })).toBe('Sara commented on Add refund endpoint');
   });
 
   it('phrases a catch with the bonus formatted by formatMoney', () => {
@@ -78,8 +112,8 @@ describe('eventText', () => {
 
   it('uses "an" before an outage bug, in a decline and in a catch', () => {
     const base = { prId: 'p1', prTitle: 'Add refund endpoint', by: 'a', byName: 'Sara', at: 1 };
-    expect(eventText({ ...base, kind: 'decline', bugType: 'outage' })).toBe(
-      'Sara declined Add refund endpoint as an outage bug',
+    expect(eventText({ ...base, kind: 'decline', bugType: 'outage', verdict: 'clean' })).toBe(
+      'Sara declined Add refund endpoint as an outage bug: no bug there, its value is lost',
     );
     expect(eventText({ ...base, kind: 'catch', bugType: 'outage', bonus: 150_000 })).toBe(
       'Sara caught an outage bug in Add refund endpoint: +$150k',

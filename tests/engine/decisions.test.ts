@@ -159,6 +159,7 @@ describe('merge and decline outcomes (the Decisions table)', () => {
         by: SARA.id,
         byName: 'Sara',
         bugType: 'money',
+        verdict: 'clean',
         at: NOW,
       },
     ]);
@@ -224,6 +225,7 @@ describe('merge and decline outcomes (the Decisions table)', () => {
         by: SARA.id,
         byName: 'Sara',
         bugType: 'outage',
+        verdict: 'wrong-reason',
         at: NOW,
       },
     ]);
@@ -613,5 +615,54 @@ describe('joining mid-quarter', () => {
       applyIntent(joined, late.id, { t: 'merge', prId: 'c1' }, NOW + 31_000, rng()),
     );
     expect(serverPrOf(result.state, 'c1').resolution).toMatchObject({ byName: 'Late' });
+  });
+});
+
+describe('comment events', () => {
+  it('emits a small comment event with no text, for a line and for the whole PR', () => {
+    const state = gameWith([serverPr('c1', null)]);
+    const line = expectApplied(
+      applyIntent(
+        state,
+        SARA.id,
+        { t: 'comment', prId: 'c1', line: 1, text: 'secret words' },
+        NOW,
+        rng(),
+      ),
+    );
+    expect(line.events).toEqual([
+      {
+        kind: 'comment',
+        prId: 'c1',
+        prTitle: 'PR c1',
+        by: SARA.id,
+        byName: 'Sara',
+        onLine: true,
+        at: NOW,
+      },
+    ]);
+    const whole = expectApplied(
+      applyIntent(
+        state,
+        SARA.id,
+        { t: 'comment', prId: 'c1', line: null, text: 'hello' },
+        NOW,
+        rng(),
+      ),
+    );
+    expect(whole.events).toMatchObject([{ kind: 'comment', onLine: false }]);
+    expect(JSON.stringify(whole.events)).not.toContain('hello');
+  });
+
+  it('emits no event for a rejected comment', () => {
+    const state = gameWith([serverPr('c1', null)]);
+    const result = applyIntent(
+      state,
+      SARA.id,
+      { t: 'comment', prId: 'c1', line: null, text: '  ' },
+      NOW,
+      rng(),
+    );
+    expect(result.ok).toBe(false);
   });
 });

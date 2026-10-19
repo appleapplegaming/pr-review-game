@@ -108,6 +108,8 @@ export interface PublicRoomState {
   bankrupt: boolean;
 }
 
+export type DeclineVerdict = 'clean' | 'wrong-reason';
+
 export type GameEvent =
   | { kind: 'incident'; bugType: BugType; text: string; at: number }
   | {
@@ -133,6 +135,22 @@ export type GameEvent =
       by: string;
       byName: string;
       bugType: BugType;
+      /**
+       * The only outcome shown before the postmortem. 'clean': the PR had no bug, its value is
+       * lost. 'wrong-reason': the PR had a real bug, but the type was wrong (no bonus). The real
+       * bug type is never sent.
+       */
+      verdict: DeclineVerdict;
+      at: number;
+    }
+  | {
+      kind: 'comment';
+      prId: string;
+      prTitle: string;
+      by: string;
+      byName: string;
+      /** True for a diff-line comment, false for a whole-PR comment. The text is never included. */
+      onLine: boolean;
       at: number;
     }
   | {

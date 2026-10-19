@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useRef, useState } from 'preact/hooks';
 import { config } from '../../../shared/config';
 import { net } from '../net/live';
 import { selectIsHost, store } from '../net/store';
@@ -15,9 +15,12 @@ export function Lobby({ room }: { room: PublicRoomState }) {
   const isHost = useStore(selectIsHost);
   const [companyDraft, setCompanyDraft] = useState(room.companyName);
   const [problem, setProblem] = useState<string | null>(null);
+  const [companyError, setCompanyError] = useState<string | null>(null);
+  const companyRef = useRef<HTMLInputElement>(null);
   const [copied, setCopied] = useState<'yes' | 'no' | null>(null);
   const canSend = conn === 'open';
   const shown = problem ?? serverError?.message ?? null;
+  const connected = room.players.filter((p) => p.connected).length;
   const link = roomLink(window.location.origin, room.code);
 
   function submit(msg: Parameters<typeof net.send>[0]) {
@@ -32,7 +35,12 @@ export function Lobby({ room }: { room: PublicRoomState }) {
   function onRename(event: Event) {
     event.preventDefault();
     const checked = validateCompanyName(companyDraft);
-    if (!checked.ok) return setProblem(checked.message);
+    if (!checked.ok) {
+      setCompanyError(checked.message);
+      companyRef.current?.focus();
+      return;
+    }
+    setCompanyError(null);
     submit({ t: 'rename', companyName: checked.value });
   }
 
@@ -54,7 +62,8 @@ export function Lobby({ room }: { room: PublicRoomState }) {
           {room.companyName}
         </h1>
         <p className={styles.code}>
-          Room <span aria-label={`room code ${room.code.split('').join(' ')}`}>{room.code}</span>
+          Room <span aria-hidden="true">{room.code}</span>
+          <span className="sr-only">{room.code.split('').join(' ')}</span>
         </p>
       </header>
 
@@ -62,19 +71,25 @@ export function Lobby({ room }: { room: PublicRoomState }) {
         <label htmlFor="share-link" className={styles.label}>
           Share link
         </label>
+        <p id="share-help" className={styles.muted}>
+          Send this link to your team. Select it to copy, or use the button.
+        </p>
         <div className={styles.shareRow}>
           <input
             id="share-link"
             className={styles.linkField}
             value={link}
             readOnly
+            aria-describedby="share-help"
+            title="Select to copy"
+
             onFocus={(e) => e.currentTarget.select()}
           />
           <button type="button" className={styles.secondary} onClick={onCopy}>
             Copy link
           </button>
         </div>
-        <p role="status" className={styles.muted}>
+        <p aria-live="polite" className={styles.muted}>
           {copied === 'yes'
             ? 'Link copied.'
             : copied === 'no'
@@ -115,7 +130,10 @@ export function Lobby({ room }: { room: PublicRoomState }) {
             <div className={styles.shareRow}>
               <input
                 id="company-name"
-                className={styles.linkField}
+                ref={companyRef}
+                className={styles.nameField}
+                aria-invalid={companyError !== null}
+                aria-describedby={companyError !== null ? 'company-name-error' : undefined}
                 maxLength={config.companyName.max}
                 value={companyDraft}
                 onInput={(e) => setCompanyDraft(e.currentTarget.value)}
@@ -125,10 +143,25 @@ export function Lobby({ room }: { room: PublicRoomState }) {
                 Rename
               </button>
             </div>
+            {companyError !== null && (
+              <p id="company-name-error" className={styles.error}>
+                {companyError}
+              </p>
+            )}
           </form>
-          <button type="button" className={styles.primary} onClick={onStart} disabled={!canSend}>
+          <button
+            type="button"
+            className={styles.primary}
+            onClick={onStart}
+            disabled={!canSend}
+            aria-describedby="start-help"
+          >
             Start quarter
           </button>
+          <p id="start-help" className={styles.muted}>
+            {connected} {connected === 1 ? 'player is' : 'players are'} connected. Everyone who is
+            here when you start plays this quarter, so wait for your team first.
+          </p>
         </section>
       ) : (
         <p className={styles.muted}>Waiting for the host to start the quarter.</p>
