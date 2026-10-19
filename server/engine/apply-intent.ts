@@ -1,14 +1,14 @@
-// Player decisions on a PR: open (presence), merge and decline. Pure: the caller passes the
-// player, the clock and the RNG. The first decision the engine receives wins. Later ones are
-// rejected with PR_NOT_OPEN, naming whoever resolved the PR.
-//
-// comment and ping are handled by Task 7, so they are not part of this type.
+// Player intents on a PR: open (presence), merge and decline (decisions), and comment and ping
+// (collab, see collab.ts). Pure: the caller passes the player, the clock and the RNG. The first
+// decision the engine receives wins. Later ones are rejected with PR_NOT_OPEN, naming whoever
+// resolved the PR. Comments and pings are not decisions, so they still work after a resolve.
 
 import type { ErrorCode, GameEvent, Resolution } from '../../shared/types';
 import type { Intent } from '../../shared/protocol';
 import { config } from '../../shared/config';
 import { randomInt, type Rng } from './rng';
 import type { GameState, Quarter, ServerPr } from './state';
+import { addComment, addPing } from './collab';
 
 export type DecisionIntent = Extract<Intent, { t: 'open' | 'merge' | 'decline' }>;
 
@@ -95,7 +95,7 @@ export function mergePr(
 export function applyIntent(
   state: GameState,
   playerId: string,
-  intent: DecisionIntent,
+  intent: Intent,
   now: number,
   rng: Rng,
 ): ApplyResult {
@@ -116,6 +116,26 @@ export function applyIntent(
       return { ok: true, state, events: [] };
     const viewed = { ...pr, viewers: [...pr.viewers, playerId] };
     return { ok: true, state: withQuarter(state, withPr(quarter, viewed)), events: [] };
+  }
+
+  if (intent.t === 'comment') {
+    const result = addComment(quarter, pr, player, intent.line, intent.text, now);
+    if (!result.ok) return result;
+    return { ok: true, state: withQuarter(state, result.quarter), events: [] };
+  }
+
+  if (intent.t === 'ping') {
+    const result = addPing(quarter, pr, player, now);
+    if (!result.ok) return result;
+    const event: GameEvent = {
+      kind: 'ping',
+      prId: pr.pr.id,
+      prTitle: pr.pr.title,
+      playerId,
+      playerName: player.name,
+      at: now,
+    };
+    return { ok: true, state: withQuarter(state, result.quarter), events: [event] };
   }
 
   if (pr.status !== 'open') {

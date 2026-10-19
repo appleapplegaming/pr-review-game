@@ -141,12 +141,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Add `comment` and `ping` to `applyIntent`. Comments are trimmed and must be 1–280 characters. A comment's `line` must exist in the parsed diff, or be `null` for the whole PR. Comments still work after a PR resolves. A ping marks the PR as highlighted until it resolves, a player can ping the same PR only once every 20 s, and neither action pauses the PR's timer.
 
 **Acceptance criteria:**
-- [ ] Comments that are empty, too long or on an out-of-range line are rejected. A comment on a resolved PR is accepted.
-- [ ] A second ping from the same player on the same PR within 20 s is rejected, and one after 20 s is accepted. Pings from different players are independent.
-- [ ] The highlight clears when the PR resolves, and an expiry test shows comments and pings don't change the PR's timer.
+- [x] Comments that are empty, too long or on an out-of-range line are rejected. A comment on a resolved PR is accepted.
+- [x] A second ping from the same player on the same PR within 20 s is rejected, and one after 20 s is accepted. Pings from different players are independent.
+- [x] The highlight clears when the PR resolves, and an expiry test shows comments and pings don't change the PR's timer.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/collab.test.ts`
+- [x] Tests pass: `npx vitest run tests/engine/collab.test.ts`
 
 **Dependencies:** Task 5 (can run in parallel with Tasks 6 and 8)
 
