@@ -76,7 +76,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 ### Phase 2: Server and realtime (highest risk, so it comes before the UI)
 - [x] Task 10: Room registry: codes, join and rejoin, host handover, cleanup, play again
 - [x] Task 11: WebSocket layer: validation, rate limit, broadcast and tick loop
-- [ ] Task 12: HTTP server: static client, `/r/:code`, WebSocket upgrade, `PORT`
+- [x] Task 12: HTTP server: static client, `/r/:code`, WebSocket upgrade, `PORT`
 - [ ] Task 13: Protocol integration tests: full game, leak, reconnect, handover, rate limit
 
 ### Checkpoint C: Headless game works

@@ -44,6 +44,8 @@ export const config = {
   tickMs: 250,
   roomCleanupMs: 1_800_000, // 30 min after the last player leaves
   maxMessageBytes: 4_096, // largest client frame; a 280-char comment is at most about 1,120 bytes
+  defaultPort: 3000, // used when PORT is unset
+  wsMaxPayloadBytes: 65_536, // transport ceiling for ws; ws.ts still enforces maxMessageBytes first
 
   // Content validation
   featureValue: { min: 200_000, max: 2_000_000 },

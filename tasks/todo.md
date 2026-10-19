@@ -250,13 +250,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `index.ts`. It serves `dist/client` with the right content types and returns `index.html` for `/` and `/r/:code`. It handles the WebSocket upgrade on the same server, reads `PORT` (default 3000), and applies `SHIP_IT_TIME_SCALE` only when `NODE_ENV=test`. It also exports `startServer()` for the in-process tests.
 
 **Acceptance criteria:**
-- [ ] `GET /r/KZQX` returns the app's HTML. Requests for unknown static files get a 404, and path traversal attempts are blocked.
-- [ ] `startServer({ port: 0 })` returns the port it actually bound and a `close()` function.
-- [ ] The time scale has no effect unless `NODE_ENV=test`.
+- [x] `GET /r/KZQX` returns the app's HTML. Requests for unknown static files get a 404, and path traversal attempts are blocked.
+- [x] `startServer({ port: 0 })` returns the port it actually bound and a `close()` function.
+- [x] The time scale has no effect unless `NODE_ENV=test`.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/http.test.ts`
-- [ ] Build succeeds: `npm run build && npm start` serves on `$PORT`
+- [x] Tests pass: `npx vitest run tests/http.test.ts`
+- [x] Build succeeds: `npm run build && npm start` serves on `$PORT`
 
 **Dependencies:** Task 11
 

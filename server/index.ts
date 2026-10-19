@@ -1,12 +1,12 @@
-import { createServer } from 'node:http';
+// Entry point: reads PORT and starts the server. All the wiring lives in app.ts.
 
-const port = Number(process.env.PORT) || 3000;
+import { portFromEnv, startServer } from './app';
 
-const server = createServer((_req, res) => {
-  res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
-  res.end('Ship It server\n');
-});
+const running = await startServer({ port: portFromEnv(process.env) });
+console.log(`Ship It listening on port ${running.port}`);
 
-server.listen(port, () => {
-  console.log(`Ship It listening on port ${port}`);
-});
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.once(signal, () => {
+    void running.close().then(() => process.exit(0));
+  });
+}
