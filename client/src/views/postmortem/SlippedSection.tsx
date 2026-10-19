@@ -55,6 +55,7 @@ export function SlippedSection({ entries }: { entries: SlippedEntry[] }) {
                   pings={entry.pings}
                   bugLines={bugLines}
                   outcome="merged"
+                  resolvedAt={entry.resolvedAt}
                 />
               </li>
             );

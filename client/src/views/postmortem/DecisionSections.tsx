@@ -68,6 +68,7 @@ function DecisionList({
                     pings={entry.pings}
                     bugLines={bug === null ? undefined : highlightedLines(bug)}
                     outcome="declined"
+                    resolvedAt={entry.resolvedAt}
                   />
                 </li>
               );

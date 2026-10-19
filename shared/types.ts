@@ -172,6 +172,8 @@ export interface SlippedEntry {
   mergedBy: string | null;
   mergedByName: string | null;
   autoMerged: boolean;
+  /** When the PR was merged (epoch ms), so a ping can be compared with the decision. */
+  resolvedAt: number;
   /** Value lost, including outage downtime at the hourly rate. */
   damage: number;
   downtimeMinutes: number;
@@ -185,6 +187,8 @@ export interface DecisionEntry {
   byName: string;
   /** The type the player chose. */
   bugType: BugType | null;
+  /** When the PR was declined (epoch ms). */
+  resolvedAt: number;
   comments: Comment[];
   pings: Ping[];
 }

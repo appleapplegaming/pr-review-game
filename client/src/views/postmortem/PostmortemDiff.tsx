@@ -67,7 +67,9 @@ export function PostmortemDiff({ diff, bugLines, compact = false }: Props) {
 
   return (
     <details className={styles.diffBox} open={!compact}>
-      <summary className={styles.diffSummary}>{diffSummary(lines.length, bugLines.size)}</summary>
+      <summary className={styles.diffSummary}>
+        {diffSummary(lines.length, bugLines.size, excerpt)}
+      </summary>
       <pre className={styles.diff} tabIndex={0} role="group" aria-label="Diff lines">
         {rows}
       </pre>

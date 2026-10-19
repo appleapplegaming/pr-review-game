@@ -265,10 +265,10 @@
 
 /* Diff: same monospace look as DiffView, with bug lines outlined and tagged. */
 .diff {
-  --bug-bg: #fff4d6;
-  --bug-fg: #6b4a00;
-  --bug-border: #b26a00;
-  --gutter: #5b6372;
+  --bug-bg: light-dark(#fff4d6, #3d2f08);
+  --bug-fg: light-dark(#6b4a00, #ffe08a);
+  --bug-border: light-dark(#b26a00, #e0a23a);
+  --gutter: light-dark(#5b6372, #9aa3b2);
   display: block;
   margin: 0;
   padding: 0;
@@ -290,13 +290,13 @@
 }
 
 .diffRow[data-kind='add'] {
-  background: #e6f4ea;
-  color: #0f5132;
+  background: light-dark(#e6f4ea, #14321f);
+  color: light-dark(#0f5132, #a7e3bd);
 }
 
 .diffRow[data-kind='remove'] {
-  background: #fbe9e7;
-  color: #8a1c12;
+  background: light-dark(#fbe9e7, #3a1a17);
+  color: light-dark(#8a1c12, #ffb4a8);
 }
 
 .diffRow[data-bug='yes'] {
@@ -377,40 +377,6 @@
 .error {
   margin: 0;
   color: var(--color-danger);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .diff {
-    --bug-bg: #3d2f08;
-    --bug-fg: #ffe08a;
-    --bug-border: #e0a23a;
-    --gutter: #9aa3b2;
-  }
-  :root:not([data-theme='light']) .diffRow[data-kind='add'] {
-    background: #14321f;
-    color: #a7e3bd;
-  }
-  :root:not([data-theme='light']) .diffRow[data-kind='remove'] {
-    background: #3a1a17;
-    color: #ffb4a8;
-  }
-}
-
-:root[data-theme='dark'] .diff {
-  --bug-bg: #3d2f08;
-  --bug-fg: #ffe08a;
-  --bug-border: #e0a23a;
-  --gutter: #9aa3b2;
-}
-
-:root[data-theme='dark'] .diffRow[data-kind='add'] {
-  background: #14321f;
-  color: #a7e3bd;
-}
-
-:root[data-theme='dark'] .diffRow[data-kind='remove'] {
-  background: #3a1a17;
-  color: #ffb4a8;
 }
 
 @media (min-width: 720px) {

@@ -11,7 +11,14 @@ import { config } from '../../../../shared/config';
 import type { GameEvent } from '../../../../shared/types';
 import { store } from '../../net/store';
 import { useStore } from '../../net/use-store';
-import { addToasts, holdToasts, liveToasts, visibleToasts, type Toast } from './toast-queue';
+import {
+  addToasts,
+  withoutOwnComments,
+  holdToasts,
+  liveToasts,
+  visibleToasts,
+  type Toast,
+} from './toast-queue';
 import { useNow } from './use-now';
 import styles from './Toasts.module.css';
 
@@ -33,8 +40,15 @@ export function Toasts() {
 
   useEffect(() => {
     if (events.length === 0) return;
+    const playerId = store.getState().session?.playerId;
     setToasts((prev) =>
-      addToasts(prev, events, Date.now(), config.toastMs, config.toastIncidentMs),
+      addToasts(
+        prev,
+        withoutOwnComments(events, playerId),
+        Date.now(),
+        config.toastMs,
+        config.toastIncidentMs,
+      ),
     );
     for (const queued of events) store.dispatch({ type: 'dismissEvent', id: queued.id });
   }, [events]);

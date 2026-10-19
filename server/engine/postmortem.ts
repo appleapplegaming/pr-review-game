@@ -56,6 +56,7 @@ function slippedEntries(prs: ServerPr[]): SlippedEntry[] {
       mergedBy: resolution.by,
       mergedByName: resolution.byName,
       autoMerged: resolution.by === null,
+      resolvedAt: resolution.at,
       damage: damageOf(bug),
       downtimeMinutes: incidentEffect(bug).downtimeMinutes,
       comments: [...entry.comments],
@@ -70,12 +71,14 @@ function decisionEntry(
   by: string,
   byName: string,
   bugType: DecisionEntry['bugType'],
+  resolvedAt: number,
 ): DecisionEntry {
   return {
     pr: entry.pr,
     by,
     byName,
     bugType,
+    resolvedAt,
     comments: [...entry.comments],
     pings: [...entry.pings],
   };
@@ -95,11 +98,15 @@ function declinedEntries(prs: ServerPr[]): {
     if (entry.status !== 'declined' || resolution?.kind !== 'declined') continue;
     const bug = entry.pr.bug;
     if (bug === null) {
-      lostRevenue.push(decisionEntry(entry, resolution.by, resolution.byName, null));
+      lostRevenue.push(decisionEntry(entry, resolution.by, resolution.byName, null, resolution.at));
     } else if (resolution.bugType === bug.type) {
-      catches.push(decisionEntry(entry, resolution.by, resolution.byName, resolution.bugType));
+      catches.push(
+        decisionEntry(entry, resolution.by, resolution.byName, resolution.bugType, resolution.at),
+      );
     } else {
-      wrongReason.push(decisionEntry(entry, resolution.by, resolution.byName, resolution.bugType));
+      wrongReason.push(
+        decisionEntry(entry, resolution.by, resolution.byName, resolution.bugType, resolution.at),
+      );
     }
   }
   return { catches, wrongReason, lostRevenue };

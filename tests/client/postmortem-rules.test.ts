@@ -178,6 +178,7 @@ describe('diff helpers', () => {
     expect(diffSummary(14, 2)).toBe('Diff, 14 lines, 2 bug lines');
     expect(diffSummary(10, 1)).toBe('Diff, 10 lines, 1 bug line');
     expect(diffSummary(10, 0)).toBe('Diff, 10 lines');
+    expect(diffSummary(40, 2, true)).toBe('Diff, 40 lines, 2 bug lines, showing excerpt');
     expect(bugLineCount(0)).toBe('0 bug lines');
   });
 
@@ -196,8 +197,13 @@ describe('thread helpers', () => {
   });
 
   it('says what followed a ping', () => {
-    expect(pingOutcomeText('merged')).toBe('Merged afterwards.');
-    expect(pingOutcomeText('declined')).toBe('Declined afterwards.');
+    expect(pingOutcomeText('merged', 100, 200)).toBe('Merged afterwards.');
+    expect(pingOutcomeText('declined', 100, 200)).toBe('Declined afterwards.');
+  });
+
+  it('says nothing when the decision was not after the ping', () => {
+    expect(pingOutcomeText('merged', 200, 200)).toBe('');
+    expect(pingOutcomeText('declined', 300, 200)).toBe('');
   });
 });
 

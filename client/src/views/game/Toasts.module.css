@@ -79,7 +79,7 @@
 }
 
 .incident {
-  --tone: #b42318;
+  --tone: light-dark(#b42318, #ff8a80);
 }
 
 .catch {
@@ -94,14 +94,4 @@
 .merge,
 .decline {
   --tone: var(--color-muted);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .incident {
-    --tone: #ff8a80;
-  }
-}
-
-:root[data-theme='dark'] .incident {
-  --tone: #ff8a80;
 }

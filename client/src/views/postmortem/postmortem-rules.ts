@@ -115,8 +115,9 @@ export function pingText(ping: Ping): string {
 
 export type Outcome = 'merged' | 'declined';
 
-/** Whether the PR was merged or declined after the ping. Pings are blocked once a PR resolves. */
-export function pingOutcomeText(outcome: Outcome): string {
+/** What followed a ping, only when the decision really came after it. Otherwise nothing. */
+export function pingOutcomeText(outcome: Outcome, pingAt: number, resolvedAt: number): string {
+  if (resolvedAt <= pingAt) return '';
   return outcome === 'merged' ? 'Merged afterwards.' : 'Declined afterwards.';
 }
 
@@ -130,10 +131,11 @@ export function bugLineCount(count: number): string {
   return `${count} bug ${count === 1 ? 'line' : 'lines'}`;
 }
 
-/** The <details> summary for a diff: "Diff, 14 lines, 2 bug lines". */
-export function diffSummary(lineCount: number, bugCount: number): string {
+/** The <details> summary for a diff: "Diff, 40 lines, 2 bug lines, showing excerpt". */
+export function diffSummary(lineCount: number, bugCount: number, excerpt = false): string {
   const lines = `${lineCount} ${lineCount === 1 ? 'line' : 'lines'}`;
-  return bugCount > 0 ? `Diff, ${lines}, ${bugLineCount(bugCount)}` : `Diff, ${lines}`;
+  const base = bugCount > 0 ? `Diff, ${lines}, ${bugLineCount(bugCount)}` : `Diff, ${lines}`;
+  return excerpt ? `${base}, showing excerpt` : base;
 }
 
 export const SHORT_DIFF_LINES = 16;

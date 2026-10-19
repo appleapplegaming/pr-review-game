@@ -15,6 +15,22 @@ export interface Toast {
   dueAt: number;
 }
 
+/** True for a comment the local player wrote. They know; only others' comments earn a toast. */
+export function isOwnCommentEvent(event: GameEvent, playerId: string | undefined): boolean {
+  return playerId !== undefined && event.kind === 'comment' && event.by === playerId;
+}
+
+/**
+ * Drops the events that should not toast for the local player. Own declines stay, because the
+ * toast carries the verdict. The activity feed is unaffected: it reads the full event stream.
+ */
+export function withoutOwnComments(
+  incoming: readonly QueuedEvent[],
+  playerId: string | undefined,
+): QueuedEvent[] {
+  return incoming.filter((q) => !isOwnCommentEvent(q.event, playerId));
+}
+
 /** Adds the events that are not queued yet. An id already present is ignored. */
 export function addToasts(
   toasts: readonly Toast[],

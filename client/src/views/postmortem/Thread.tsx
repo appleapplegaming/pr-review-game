@@ -1,6 +1,6 @@
 // Comments and pings on one PR, in the order they happened, each with its quarter time (mm:ss).
 // Text is rendered as text, never HTML. Comments on a bug line are tagged, and a ping says whether
-// the PR was merged or declined afterwards.
+// the PR was merged or declined afterwards (only when the recorded decision came later).
 
 import type { Comment, Ping } from '../../../../shared/types';
 import { useStore } from '../../net/use-store';
@@ -21,13 +21,15 @@ interface Props {
   pings: Ping[];
   /** How the PR ended, so a ping can say what followed it. */
   outcome: Outcome;
+  /** When that decision was made (epoch ms). */
+  resolvedAt: number;
   /** Diff line numbers that hold the bug, or empty for a clean PR. */
   bugLines?: ReadonlySet<number>;
 }
 
 const NO_LINES: ReadonlySet<number> = new Set();
 
-export function Thread({ comments, pings, outcome, bugLines = NO_LINES }: Props) {
+export function Thread({ comments, pings, outcome, resolvedAt, bugLines = NO_LINES }: Props) {
   const startedAt = useStore((s) => s.room?.startedAt ?? null);
   const items = threadItems(comments, pings);
   if (items.length === 0) {
@@ -57,7 +59,9 @@ export function Thread({ comments, pings, outcome, bugLines = NO_LINES }: Props)
             <li key={`p-${item.at}-${item.ping.playerId}`} className={styles.threadItem}>
               <p className={styles.threadMeta}>
                 {time(item.at)} <Emoji>🙋</Emoji>
-                {pingText(item.ping)}. {pingOutcomeText(outcome)}
+                {[`${pingText(item.ping)}.`, pingOutcomeText(outcome, item.at, resolvedAt)]
+                  .filter((part) => part !== '')
+                  .join(' ')}
               </p>
             </li>
           ),

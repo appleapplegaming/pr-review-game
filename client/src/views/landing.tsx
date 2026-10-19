@@ -119,7 +119,7 @@ export function Landing({ initialCode, linkInvalid = false }: Props) {
             <div className={styles.connRow}>
               <p className={styles.muted}>{copy.detail}</p>
               {copy.canRetry && (
-                <button type="button" className={styles.secondary} onClick={() => net.retry()}>
+                <button type="button" className="btn btn-secondary" onClick={() => net.retry()}>
                   Retry
                 </button>
               )}
@@ -171,12 +171,12 @@ export function Landing({ initialCode, linkInvalid = false }: Props) {
             )}
           </div>
           <div className={styles.actions}>
-            <button type="submit" className={styles.primary} disabled={!canSend}>
+            <button type="submit" className="btn btn-primary" disabled={!canSend}>
               Join room
             </button>
             <button
               type="button"
-              className={styles.secondary}
+              className="btn btn-secondary"
               onClick={onCreate}
               disabled={!canSend}
             >

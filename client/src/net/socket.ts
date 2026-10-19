@@ -12,6 +12,7 @@
 //  - The clock offset is measured from the join that produced the welcome, on every reconnect.
 
 import type { ClientMsg, ServerMsg } from '../../../shared/protocol';
+import type { ErrorCode } from '../../../shared/types';
 import { reconnectDelay } from './backoff';
 import { offsetFromWelcome } from './clock';
 import { clearSession, loadSession, saveSession, type KeyValueStorage } from './session';
@@ -81,6 +82,11 @@ export function browserConnect(url: string, handlers: SocketHandlers): Transport
       socket.close();
     },
   };
+}
+
+/** Errors that say "try again later", not "this seat is invalid". They keep the stored session. */
+export function isTransientError(code: ErrorCode): boolean {
+  return code === 'RATE_LIMITED' || code === 'SERVER_ERROR';
 }
 
 export function createSocketClient(options: SocketClientOptions): SocketClient {
@@ -158,8 +164,9 @@ export function createSocketClient(options: SocketClientOptions): SocketClient {
     }
 
     if (msg.t === 'error') {
-      if (rejoining && msg.code === 'ROOM_NOT_FOUND') {
-        // The room is gone (for example, the server restarted). Stop retrying the stored seat.
+      if (rejoining && !isTransientError(msg.code)) {
+        // The seat can never be valid (room gone, name or seat refused). Stop retrying it on every
+        // reload. Transient errors keep the seat so a later reload can still rejoin.
         clearSession(storage);
         dispatch({ type: 'sessionLost' });
       }

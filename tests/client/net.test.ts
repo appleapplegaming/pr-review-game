@@ -438,6 +438,45 @@ describe('socket client', () => {
     expect(store.getState().error?.code).toBe('ROOM_NOT_FOUND');
   });
 
+  it.each(['INVALID_NAME', 'NOT_IN_ROOM', 'BAD_MESSAGE', 'WRONG_PHASE'] as const)(
+    'a %s error during auto-rejoin clears the stored seat for good',
+    (code) => {
+      const { net, sockets, store, storage } = setup({
+        [SESSION_KEY]: JSON.stringify({ playerId: 'p9', code: 'WXYZ', name: 'Joe' }),
+      });
+      net.start();
+      sockets[0]?.open();
+      sockets[0]?.receive({ t: 'error', code, message: 'nope' });
+      expect(loadSession(storage)).toBeNull();
+      expect(store.getState().session).toBeNull();
+      expect(store.getState().error?.code).toBe(code);
+    },
+  );
+
+  it.each(['RATE_LIMITED', 'SERVER_ERROR'] as const)(
+    'a transient %s error during auto-rejoin keeps the stored seat but surfaces the error',
+    (code) => {
+      const { net, sockets, store, storage } = setup({
+        [SESSION_KEY]: JSON.stringify({ playerId: 'p9', code: 'WXYZ', name: 'Joe' }),
+      });
+      net.start();
+      sockets[0]?.open();
+      sockets[0]?.receive({ t: 'error', code, message: 'busy' });
+      expect(loadSession(storage)).toEqual({ playerId: 'p9', code: 'WXYZ', name: 'Joe' });
+      expect(store.getState().error?.code).toBe(code);
+    },
+  );
+
+  it('an error that is not a reply to the auto-rejoin leaves the stored seat alone', () => {
+    const { net, sockets, storage } = setup();
+    net.start();
+    sockets[0]?.open();
+    net.send({ t: 'join', code: 'ABCD', name: 'Sara' });
+    sockets[0]?.receive({ t: 'welcome', playerId: 'p1', code: 'ABCD', serverNow: 1_000_000 });
+    sockets[0]?.receive({ t: 'error', code: 'WRONG_PHASE', message: 'x' });
+    expect(loadSession(storage)).not.toBeNull();
+  });
+
   it('after a drop before welcome, does not resend create, so no second room is made', () => {
     const { net, sockets } = setup();
     net.start();

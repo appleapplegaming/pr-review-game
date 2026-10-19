@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import type { QueuedEvent } from '../../client/src/net/store';
 import {
   addToasts,
+  isOwnCommentEvent,
+  withoutOwnComments,
   holdToasts,
   liveToasts,
   visibleToasts,
@@ -86,5 +88,44 @@ describe('visibleToasts', () => {
   });
   it('shows everything when it fits', () => {
     expect(visibleToasts(many.slice(0, 2), 3).hidden).toBe(0);
+  });
+});
+
+const comment = (id: number, by: string): QueuedEvent => ({
+  id,
+  event: { kind: 'comment', prId: 'pr1', prTitle: 'T', by, byName: by, onLine: false, at: 0 },
+});
+const decline = (id: number, by: string): QueuedEvent => ({
+  id,
+  event: {
+    kind: 'decline',
+    prId: 'pr1',
+    prTitle: 'T',
+    by,
+    byName: by,
+    bugType: 'money',
+    verdict: 'clean',
+    at: 0,
+  },
+});
+
+describe('own-action toasts', () => {
+  it('flags only comment events by the local player', () => {
+    expect(isOwnCommentEvent(comment(1, 'me').event, 'me')).toBe(true);
+    expect(isOwnCommentEvent(comment(1, 'you').event, 'me')).toBe(false);
+    expect(isOwnCommentEvent(decline(1, 'me').event, 'me')).toBe(false);
+    expect(isOwnCommentEvent(comment(1, 'me').event, undefined)).toBe(false);
+  });
+
+  it('drops own comments but keeps own declines and others events', () => {
+    const kept = withoutOwnComments(
+      [comment(1, 'me'), comment(2, 'you'), decline(3, 'me'), incident(4, 'X')],
+      'me',
+    );
+    expect(kept.map((q) => q.id)).toEqual([2, 3, 4]);
+  });
+
+  it('keeps everything when there is no local player', () => {
+    expect(withoutOwnComments([comment(1, 'me')], undefined)).toHaveLength(1);
   });
 });

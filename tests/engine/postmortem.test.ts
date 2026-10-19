@@ -241,6 +241,7 @@ describe('compareSlipped: sort order', () => {
       mergedBy: null,
       mergedByName: null,
       autoMerged: true,
+      resolvedAt: 0,
       damage,
       downtimeMinutes: 0,
       comments: [],
@@ -322,6 +323,12 @@ describe('postmortem: what slipped through', () => {
     expect(report.slipped.map((s) => s.pr.id)).toEqual(['buggy-merged']);
   });
 
+  it('carries the time the PR was merged', () => {
+    const [entry] = postmortem(game([merged('m', bug('money'), TOM)])).slipped;
+
+    expect(entry?.resolvedAt).toBe(MERGED_AT);
+  });
+
   it('sorts by damage, with outage downtime at the hourly rate', () => {
     const state = game([
       merged('money-minor', bug('money', 'minor'), TOM), // 500k
@@ -400,6 +407,7 @@ describe('postmortem: great catches, right call wrong reason and lost revenue', 
         by: SARA.id,
         byName: 'Sara',
         bugType: 'security',
+        resolvedAt: MERGED_AT,
         comments: [],
         pings: [],
       },

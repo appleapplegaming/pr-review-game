@@ -1,11 +1,11 @@
-/* Diff colours are tokens scoped to the diff, with both dark-mode forms like global.css. The sign
+/* Diff colours are tokens scoped to the diff, declared once with light-dark() like global.css. The sign
    and the screen-reader word carry the meaning, so colour is never the only cue. */
 .diff {
-  --diff-add-bg: #e6f4ea;
-  --diff-add-fg: #0f5132;
-  --diff-remove-bg: #fbe9e7;
-  --diff-remove-fg: #8a1c12;
-  --diff-gutter: #5b6372;
+  --diff-add-bg: light-dark(#e6f4ea, #14321f);
+  --diff-add-fg: light-dark(#0f5132, #a7e3bd);
+  --diff-remove-bg: light-dark(#fbe9e7, #3a1a17);
+  --diff-remove-fg: light-dark(#8a1c12, #ffb4a8);
+  --diff-gutter: light-dark(#5b6372, #9aa3b2);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -16,24 +16,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background: var(--color-surface);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) .diff {
-    --diff-add-bg: #14321f;
-    --diff-add-fg: #a7e3bd;
-    --diff-remove-bg: #3a1a17;
-    --diff-remove-fg: #ffb4a8;
-    --diff-gutter: #9aa3b2;
-  }
-}
-
-:root[data-theme='dark'] .diff {
-  --diff-add-bg: #14321f;
-  --diff-add-fg: #a7e3bd;
-  --diff-remove-bg: #3a1a17;
-  --diff-remove-fg: #ffb4a8;
-  --diff-gutter: #9aa3b2;
 }
 
 .row {

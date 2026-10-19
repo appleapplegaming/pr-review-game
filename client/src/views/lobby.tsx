@@ -85,7 +85,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
 
             onFocus={(e) => e.currentTarget.select()}
           />
-          <button type="button" className={styles.secondary} onClick={onCopy}>
+          <button type="button" className="btn btn-secondary" onClick={onCopy}>
             Copy link
           </button>
         </div>
@@ -139,7 +139,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
                 onInput={(e) => setCompanyDraft(e.currentTarget.value)}
                 disabled={!canSend}
               />
-              <button type="submit" className={styles.secondary} disabled={!canSend}>
+              <button type="submit" className="btn btn-secondary" disabled={!canSend}>
                 Rename
               </button>
             </div>
@@ -151,7 +151,7 @@ export function Lobby({ room }: { room: PublicRoomState }) {
           </form>
           <button
             type="button"
-            className={styles.primary}
+            className="btn btn-primary"
             onClick={onStart}
             disabled={!canSend}
             aria-describedby="start-help"
