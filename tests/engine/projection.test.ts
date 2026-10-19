@@ -19,6 +19,10 @@ import {
   type ScheduledPr,
 } from '../../server/engine/state';
 import { toPublicState } from '../../server/engine/projection';
+import { applyIntent } from '../../server/engine/apply-intent';
+import { createRng } from '../../server/engine/rng';
+import type { Intent } from '../../shared/protocol';
+import type { GameEvent } from '../../shared/types';
 
 // The answer-key boundary. Every test here treats the public state as something a player could
 // read, so the bug fields must be absent from every value, not only from the expected keys.
@@ -374,5 +378,54 @@ describe('toPublicState: room, players and metrics', () => {
 
     expect(out.phase).toBe('ended');
     expect(out.prs.map((p) => p.id)).toEqual(['kept']);
+  });
+});
+
+describe('toPublicState: comments and pings made through the real engine', () => {
+  it('shows a real comment and ping, and neither the state nor the returned events carry the answer key', () => {
+    let state = buggyState();
+    const events: GameEvent[] = [];
+    const rng = createRng(3);
+    const act = (intent: Intent, player: ServerPlayer, at: number): void => {
+      const result = applyIntent(state, player.id, intent, at, rng);
+      if (!result.ok) throw new Error(`${result.code}: ${result.message}`);
+      state = result.state;
+      events.push(...result.events);
+    };
+
+    act({ t: 'open', prId: 'open-money' }, SARA, NOW + 1_000);
+    act(
+      { t: 'comment', prId: 'open-money', line: 2, text: '  this looks off  ' },
+      SARA,
+      NOW + 2_000,
+    );
+    act(
+      { t: 'comment', prId: 'open-money', line: null, text: 'who wrote this?' },
+      JOE,
+      NOW + 3_000,
+    );
+    act({ t: 'ping', prId: 'open-money' }, SARA, NOW + 4_000);
+    act({ t: 'comment', prId: 'merged-security', line: 1, text: 'too late' }, JOE, NOW + 5_000);
+
+    const publicState = toPublicState(state);
+    const open = publicState.prs.find((p) => p.id === 'open-money');
+    expect(open?.viewers).toEqual([SARA.id]);
+    expect(open?.highlighted).toBe(true);
+    expect(open?.comments.map((c) => [c.playerName, c.line, c.text])).toEqual([
+      ['Sara', 2, 'this looks off'],
+      ['Joe', null, 'who wrote this?'],
+    ]);
+    expect(publicState.prs.find((p) => p.id === 'merged-security')?.comments).toHaveLength(1);
+    expect(publicState.prs.find((p) => p.id === 'merged-security')?.highlighted).toBe(false);
+
+    expect(events).toEqual([
+      expect.objectContaining({ kind: 'ping', prId: 'open-money', playerName: 'Sara' }),
+    ]);
+    for (const output of [JSON.stringify(publicState), JSON.stringify(events)]) {
+      expect(output).not.toContain('SECRET');
+      expect(output).not.toContain('"bug"');
+      expect(output).not.toContain('"lines"');
+      expect(output).not.toContain('"explanation"');
+    }
   });
 });

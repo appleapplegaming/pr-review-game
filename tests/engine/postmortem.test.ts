@@ -518,3 +518,22 @@ describe('postmortem: team stats', () => {
     expect(sara).toMatchObject({ declined: 2, catches: 1, misses: 0 });
   });
 });
+
+describe('postmortem: section order', () => {
+  it('lists the sections in the order the spec gives', () => {
+    const report = postmortem(game([]));
+
+    expect(Object.keys(report)).toEqual([
+      'companyName',
+      'finalMetrics',
+      'badge',
+      'bankrupt',
+      'slipped',
+      'catches',
+      'wrongReason',
+      'lostRevenue',
+      'lostRevenueTotal',
+      'teamStats',
+    ]);
+  });
+});

@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Bug, BugType, PullRequest } from '../../shared/types';
+import type { Intent } from '../../shared/protocol';
 import { config } from '../../shared/config';
 import { applyIntent, type ApplyResult, type Applied } from '../../server/engine/apply-intent';
 import { createRng } from '../../server/engine/rng';
+import { tick } from '../../server/engine/tick';
 import {
   defaultTiming,
   type GameState,
@@ -528,7 +530,7 @@ describe('guards', () => {
   });
 
   it('rejects a decision at or after the quarter end time, before the tick closes the quarter', () => {
-    const state = gameWith([serverPr('c1', null)]);
+    const state = gameWith([serverPr('c1', null, { expiresAt: NOW + 600_000 })]);
     const endsAt = quarterOf(state).endsAt;
 
     const atEnd = expectRejected(
@@ -538,5 +540,78 @@ describe('guards', () => {
 
     const justBefore = applyIntent(state, SARA.id, { t: 'merge', prId: 'c1' }, endsAt - 1, rng());
     expect(justBefore.ok).toBe(true);
+  });
+});
+
+describe('the 90 s timer beats a late decision', () => {
+  it('rejects a merge or decline at or after expiresAt, even before the tick has auto-merged it', () => {
+    const state = gameWith([serverPr('b1', 'money')]);
+    const expiresAt = serverPrOf(state, 'b1').expiresAt;
+
+    const merge = expectRejected(
+      applyIntent(state, SARA.id, { t: 'merge', prId: 'b1' }, expiresAt, rng()),
+    );
+    expect(merge.code).toBe('PR_NOT_OPEN');
+    const decline = expectRejected(
+      applyIntent(state, SARA.id, { t: 'decline', prId: 'b1', bugType: 'money' }, expiresAt, rng()),
+    );
+    expect(decline.code).toBe('PR_NOT_OPEN');
+    expect(applyIntent(state, SARA.id, { t: 'merge', prId: 'b1' }, expiresAt - 1, rng()).ok).toBe(
+      true,
+    );
+  });
+
+  it('the tick then auto-merges it as nobody reviewed it, so a late click cannot take the credit', () => {
+    const state = gameWith([serverPr('b1', 'money')]);
+    const expiresAt = serverPrOf(state, 'b1').expiresAt;
+    expectRejected(applyIntent(state, SARA.id, { t: 'merge', prId: 'b1' }, expiresAt, rng()));
+
+    const ticked = tick(state, expiresAt, rng());
+    expect(serverPrOf(ticked.state, 'b1').resolution).toMatchObject({ kind: 'merged', by: null });
+  });
+});
+
+describe('decline validation', () => {
+  it('rejects a decline whose bug type is not money, security or outage, changing nothing', () => {
+    const state = gameWith([serverPr('b1', 'money')]);
+    const bad = { t: 'decline', prId: 'b1', bugType: 'typo' } as unknown as Intent;
+    const result = expectRejected(applyIntent(state, SARA.id, bad, NOW, rng()));
+
+    expect(result.code).toBe('BAD_MESSAGE');
+    expect(serverPrOf(state, 'b1').status).toBe('open');
+  });
+});
+
+describe('presence follows the player', () => {
+  it('opening a second PR moves the 👀 off the first one', () => {
+    const state = gameWith([serverPr('a1', null), serverPr('b1', null)]);
+    const first = expectApplied(applyIntent(state, SARA.id, { t: 'open', prId: 'a1' }, NOW, rng()));
+    const joe = expectApplied(
+      applyIntent(first.state, JOE.id, { t: 'open', prId: 'a1' }, NOW + 1, rng()),
+    );
+    const second = expectApplied(
+      applyIntent(joe.state, SARA.id, { t: 'open', prId: 'b1' }, NOW + 2, rng()),
+    );
+
+    expect(serverPrOf(second.state, 'a1').viewers).toEqual([JOE.id]);
+    expect(serverPrOf(second.state, 'b1').viewers).toEqual([SARA.id]);
+  });
+});
+
+describe('joining mid-quarter', () => {
+  it('a player added to the room after the quarter started can decide a PR straight away', () => {
+    const state = gameWith([serverPr('c1', null)]);
+    const late: ServerPlayer = {
+      id: 'p-late',
+      name: 'Late',
+      joinedAt: NOW + 30_000,
+      connected: true,
+    };
+    const joined: GameState = { ...state, players: [...state.players, late] };
+
+    const result = expectApplied(
+      applyIntent(joined, late.id, { t: 'merge', prId: 'c1' }, NOW + 31_000, rng()),
+    );
+    expect(serverPrOf(result.state, 'c1').resolution).toMatchObject({ byName: 'Late' });
   });
 });

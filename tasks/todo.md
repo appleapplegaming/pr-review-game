@@ -196,8 +196,8 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Estimated scope:** Medium
 
 ## Checkpoint B: Engine complete
-- [ ] Every rule in SPEC → Game Rules has a matching test name (put the mapping in a comment at the top of `tests/engine/`)
-- [ ] `server/engine/` coverage ≥ 90%
+- [x] Every rule in SPEC → Game Rules has a matching test name (mapping in `docs/engine-rule-tests.md`)
+- [x] `server/engine/` coverage ≥ 90%
 - [ ] Human review before the transport work starts
 
 ---

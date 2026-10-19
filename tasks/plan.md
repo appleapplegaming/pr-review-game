@@ -69,8 +69,8 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [x] Task 9: Postmortem report, badges and team stats
 
 ### Checkpoint B: Engine complete
-- [ ] Every rule in SPEC → Game Rules has a named passing test
-- [ ] `server/engine/` line coverage ≥ 90%
+- [x] Every rule in SPEC → Game Rules has a named passing test
+- [x] `server/engine/` line coverage ≥ 90%
 - [ ] Review with a human before the transport work starts
 
 ### Phase 2: Server and realtime (highest risk, so it comes before the UI)

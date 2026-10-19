@@ -3,7 +3,7 @@
 // decision the engine receives wins. Later ones are rejected with PR_NOT_OPEN, naming whoever
 // resolved the PR. Comments and pings are not decisions, so they still work after a resolve.
 
-import type { ErrorCode, GameEvent, Resolution } from '../../shared/types';
+import { BUG_TYPES, type ErrorCode, type GameEvent, type Resolution } from '../../shared/types';
 import type { Intent } from '../../shared/protocol';
 import { config } from '../../shared/config';
 import { randomInt, type Rng } from './rng';
@@ -112,10 +112,21 @@ export function applyIntent(
 
   if (intent.t === 'open') {
     // Presence only. Opening never locks the PR, and opening a resolved PR is not an error.
-    if (pr.status !== 'open' || pr.viewers.includes(playerId))
-      return { ok: true, state, events: [] };
-    const viewed = { ...pr, viewers: [...pr.viewers, playerId] };
-    return { ok: true, state: withQuarter(state, withPr(quarter, viewed)), events: [] };
+    // A player views one PR at a time, so opening this one moves their 👀 off any other.
+    if (pr.status !== 'open') return { ok: true, state, events: [] };
+    const prs = new Map(quarter.prs);
+    for (const [id, other] of quarter.prs) {
+      const viewers =
+        id === pr.pr.id
+          ? other.viewers.includes(playerId)
+            ? other.viewers
+            : [...other.viewers, playerId]
+          : other.viewers.filter((v) => v !== playerId);
+      if (viewers.length !== other.viewers.length) {
+        prs.set(id, { ...other, viewers });
+      }
+    }
+    return { ok: true, state: withQuarter(state, { ...quarter, prs }), events: [] };
   }
 
   if (intent.t === 'comment') {
@@ -140,6 +151,11 @@ export function applyIntent(
 
   if (pr.status !== 'open') {
     return reject('PR_NOT_OPEN', alreadyResolvedMessage(pr.resolution));
+  }
+  // The timer has run out but the tick has not auto-merged the PR yet: the auto-merge wins.
+  if (now >= pr.expiresAt) return reject('PR_NOT_OPEN', 'Time ran out: this PR is auto-merging');
+  if (intent.t === 'decline' && !BUG_TYPES.includes(intent.bugType)) {
+    return reject('BAD_MESSAGE', 'Unknown bug type');
   }
 
   const { bug, title } = pr.pr;
