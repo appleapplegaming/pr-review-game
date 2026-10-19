@@ -9,8 +9,8 @@ Correct any of these before planning starts.
 1. **Team size is 2–8 players** (confirmed). It also works solo, but solo isn't tuned.
 2. **Room state lives in server memory only.** There's no database, and a server restart ends any running games.
 3. **All PR diffs are TypeScript** (confirmed). Infra PRs are TypeScript too, e.g. config objects, middleware and job runners.
-4. **Incidents fire a few seconds after a buggy merge, not instantly.** "What did we just ship?" adds tension and is how production bugs really surface.
-5. **The company is fictional.** The room creator can rename it; the default is a random funny name.
+4. **Incidents fire a few seconds after a buggy merge, not instantly** (confirmed). "What did we just ship?" adds tension and is how production bugs really surface.
+5. **The company is fictional** (confirmed). The room creator can rename it; the default is a random funny name.
 6. **Targets are evergreen browsers**: Chrome, Safari, Firefox and Edge, including iOS Safari and Android Chrome.
 
 ---
@@ -422,5 +422,10 @@ In-memory rooms suit a sleeping free host: when nobody is playing, there's nothi
 
 ## Open Questions
 
-1. **Company name:** Keep the "random funny company name, host can rename" idea, or always use a fixed name?
-2. **Incident delay:** Is a 4–12 s delay before an incident fires more fun, or would you rather see the hit immediately on merge?
+None. Resolved decisions:
+
+- **Company name:** A random funny name by default. The host can rename it in the lobby.
+- **Incident delay:** Incidents fire 4–12 s after a buggy merge.
+- **Language:** All PRs are in TypeScript.
+- **Team size:** 2–8 players.
+- **Hosting:** Render free web service.
