@@ -403,8 +403,8 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 **Acceptance criteria:**
 - [x] Every number on the dashboard is formatted with `formatMoney()` or the shared uptime formatter.
-- [ ] Each incoming `event` shows as a toast for 4 s and is also added to the activity feed.
-- [ ] Toasts don't animate when `prefers-reduced-motion: reduce` is set.
+- [x] Each incoming `event` shows as a toast for 4 s and is also added to the activity feed.
+- [x] Toasts don't animate when `prefers-reduced-motion: reduce` is set.
 
 **Verification:**
 - [ ] Manual check: merging a buggy PR shows an incident toast 4–12 s later, and the dashboard numbers change
@@ -417,8 +417,8 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Estimated scope:** Small–Medium
 
 ## Checkpoint D: Desktop playable
-- [ ] Two desktop browsers can play a full quarter (time-scaled) by hand, with no desync over 1 s
-- [ ] All tests green, build clean
+- [x] Two desktop browsers can play a full quarter (time-scaled) by hand, with no desync over 1 s (automated two-context Chromium run at SHIP_IT_TIME_SCALE=0.2: create, join by link, comment, ping, decline race, postmortem; dashboards matched on every sample; a human pass is still open under Tasks 15 to 19)
+- [x] All tests green, build clean
 
 ---
 

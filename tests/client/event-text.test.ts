@@ -75,4 +75,14 @@ describe('eventText', () => {
     };
     expect(eventText(event)).toBe('Sara caught a money bug in Add refund endpoint: +$150k');
   });
+
+  it('uses "an" before an outage bug, in a decline and in a catch', () => {
+    const base = { prId: 'p1', prTitle: 'Add refund endpoint', by: 'a', byName: 'Sara', at: 1 };
+    expect(eventText({ ...base, kind: 'decline', bugType: 'outage' })).toBe(
+      'Sara declined Add refund endpoint as an outage bug',
+    );
+    expect(eventText({ ...base, kind: 'catch', bugType: 'outage', bonus: 150_000 })).toBe(
+      'Sara caught an outage bug in Add refund endpoint: +$150k',
+    );
+  });
 });

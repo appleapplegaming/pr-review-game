@@ -6,10 +6,11 @@
 import type { BugType, GameEvent } from '../../../../shared/types';
 import { formatMoney } from '../../../../shared/money';
 
+/** The bug type with its article, so "an outage bug" reads right. */
 const BUG_LABEL: Record<BugType, string> = {
-  money: 'money bug',
-  security: 'security bug',
-  outage: 'outage bug',
+  money: 'a money bug',
+  security: 'a security bug',
+  outage: 'an outage bug',
 };
 
 export function eventText(event: GameEvent): string {
@@ -23,8 +24,8 @@ export function eventText(event: GameEvent): string {
         ? `Auto-merged: ${event.prTitle}`
         : `${event.byName} merged ${event.prTitle}`;
     case 'decline':
-      return `${event.byName} declined ${event.prTitle} as a ${BUG_LABEL[event.bugType]}`;
+      return `${event.byName} declined ${event.prTitle} as ${BUG_LABEL[event.bugType]}`;
     case 'catch':
-      return `${event.byName} caught a ${BUG_LABEL[event.bugType]} in ${event.prTitle}: +${formatMoney(event.bonus)}`;
+      return `${event.byName} caught ${BUG_LABEL[event.bugType]} in ${event.prTitle}: +${formatMoney(event.bonus)}`;
   }
 }
