@@ -1,7 +1,7 @@
 // The queue: one card per open PR, soonest expiry first. Each card is a button, so the queue is
 // reachable by keyboard. Selection and presence live in GameScreen; this only shows and reports.
 
-import type { PublicPlayer, PublicPr } from '../../../../shared/types';
+import { LANGUAGE_LABEL, type PublicPlayer, type PublicPr } from '../../../../shared/types';
 import { CountdownRing } from '../../components/countdown-ring';
 import { commentLabel, countdown, viewerNames } from './queue-rules';
 import styles from './queue.module.css';
@@ -44,7 +44,9 @@ export function Queue({ prs, players, myId, now, selectedId, onSelect }: QueuePr
                     />
                   </span>
                   <span className={styles.title}>{pr.title}</span>
-                  <span className={styles.area}>{pr.area}</span>
+                  <span className={styles.area}>
+                    {pr.area} · {LANGUAGE_LABEL[pr.language]}
+                  </span>
                   <span className={styles.signals}>
                     <span>{commentLabel(pr.comments.length)}</span>
                     {pr.highlighted && (
