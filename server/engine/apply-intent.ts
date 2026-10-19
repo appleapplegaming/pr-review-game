@@ -52,6 +52,46 @@ function withQuarter(state: GameState, quarter: Quarter): GameState {
   return { ...state, quarter };
 }
 
+/**
+ * Merges an open PR. `by` is null for an auto-merge. The value grows by the feature value, and a
+ * buggy PR schedules its incident 4-12 s after the merge. Shared by manual merges and the tick.
+ */
+export function mergePr(
+  quarter: Quarter,
+  pr: ServerPr,
+  by: string | null,
+  byName: string | null,
+  at: number,
+  rng: Rng,
+): Quarter {
+  const merged: ServerPr = {
+    ...pr,
+    status: 'merged',
+    resolution: { kind: 'merged', by, byName, at },
+  };
+  const bug = pr.pr.bug;
+  const incidents =
+    bug === null
+      ? quarter.incidents
+      : [
+          ...quarter.incidents,
+          {
+            prId: pr.pr.id,
+            fireAt:
+              at +
+              randomInt(
+                rng,
+                quarter.timing.incidentDelayMs.min,
+                quarter.timing.incidentDelayMs.max,
+              ),
+          },
+        ];
+  return withPr(quarter, merged, {
+    metrics: { ...quarter.metrics, value: quarter.metrics.value + pr.pr.featureValue },
+    incidents,
+  });
+}
+
 export function applyIntent(
   state: GameState,
   playerId: string,
@@ -82,36 +122,11 @@ export function applyIntent(
     return reject('PR_NOT_OPEN', alreadyResolvedMessage(pr.resolution));
   }
 
-  const { bug, featureValue, title } = pr.pr;
+  const { bug, title } = pr.pr;
   const base = { prId: pr.pr.id, prTitle: title, by: playerId, byName: player.name, at: now };
 
   if (intent.t === 'merge') {
-    const merged: ServerPr = {
-      ...pr,
-      status: 'merged',
-      resolution: { kind: 'merged', by: playerId, byName: player.name, at: now },
-    };
-    // A buggy merge schedules one incident. The tick (Task 6) fires it.
-    const incidents =
-      bug === null
-        ? quarter.incidents
-        : [
-            ...quarter.incidents,
-            {
-              prId: pr.pr.id,
-              fireAt:
-                now +
-                randomInt(
-                  rng,
-                  quarter.timing.incidentDelayMs.min,
-                  quarter.timing.incidentDelayMs.max,
-                ),
-            },
-          ];
-    const next = withPr(quarter, merged, {
-      metrics: { ...quarter.metrics, value: quarter.metrics.value + featureValue },
-      incidents,
-    });
+    const next = mergePr(quarter, pr, playerId, player.name, now, rng);
     return { ok: true, state: withQuarter(state, next), events: [{ kind: 'merge', ...base }] };
   }
 

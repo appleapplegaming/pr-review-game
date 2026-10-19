@@ -118,15 +118,15 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 ## Task 6: Tick: spawns, auto-merge, delayed incidents, uptime and quarter end
 
-**Description:** Write `tick(state, now)`. It spawns PRs that are due and auto-merges PRs older than 90 s. It fires due incidents with the effect for their type and severity, applies the uptime formula and the $0 floor (bankruptcy), and ends the quarter at 10:00, when everything is resolved early, or on bankruptcy. Per SPEC → Quarter, when the quarter ends it auto-merges any open PRs and fires all pending incidents.
+**Description:** Write `tick(state, now, rng)` (the RNG is needed because an auto-merged buggy PR schedules its incident). It spawns PRs that are due and auto-merges PRs older than 90 s. It fires due incidents with the effect for their type and severity, applies the uptime formula and the $0 floor (bankruptcy), and ends the quarter at 10:00, when everything is resolved early, or on bankruptcy. Per SPEC → Quarter, when the quarter ends it auto-merges any open PRs and fires all pending incidents.
 
 **Acceptance criteria:**
-- [ ] There's a test for each type × severity cell in the Incidents table, and an uptime test such as 4 h of downtime giving 99.815%.
-- [ ] Auto-merge happens at exactly 90 s and is recorded as `by: null` ("nobody reviewed it").
-- [ ] The quarter ends in each of three ways (time-up, early resolve, bankruptcy), each with its own test. Value never drops below 0.
+- [x] There's a test for each type × severity cell in the Incidents table, and an uptime test such as 4 h of downtime giving 99.815%.
+- [x] Auto-merge happens at exactly 90 s and is recorded as `by: null` ("nobody reviewed it").
+- [x] The quarter ends in each of three ways (time-up, early resolve, bankruptcy), each with its own test. Value never drops below 0.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/tick.test.ts`
+- [x] Tests pass: `npx vitest run tests/engine/tick.test.ts`
 
 **Dependencies:** Task 5
 
