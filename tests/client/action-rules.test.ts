@@ -7,6 +7,7 @@ import {
   isTypingTarget,
   neighbourPrId,
   shortcutFor,
+  nextSheetChoice,
 } from '../../client/src/views/game/action-rules';
 
 function pr(id: string, status: PublicPr['status'] = 'open'): Pick<PublicPr, 'id' | 'status'> {
@@ -131,5 +132,27 @@ describe('DECLINE_OPTIONS', () => {
       ['security', '🔓', 'Security'],
       ['outage', '🔥', 'Outage'],
     ]);
+  });
+});
+
+describe('nextSheetChoice', () => {
+  it('moves forward through the choices and wraps from the last to the first', () => {
+    expect(nextSheetChoice(0, 3, false)).toBe(1);
+    expect(nextSheetChoice(1, 3, false)).toBe(2);
+    expect(nextSheetChoice(2, 3, false)).toBe(0);
+  });
+
+  it('moves back and wraps from the first to the last with shift', () => {
+    expect(nextSheetChoice(1, 3, true)).toBe(0);
+    expect(nextSheetChoice(0, 3, true)).toBe(2);
+  });
+
+  it('starts at the first choice when focus is outside the sheet', () => {
+    expect(nextSheetChoice(-1, 3, false)).toBe(0);
+    expect(nextSheetChoice(-1, 3, true)).toBe(2);
+  });
+
+  it('returns -1 when the sheet has no choices', () => {
+    expect(nextSheetChoice(0, 0, false)).toBe(-1);
   });
 });

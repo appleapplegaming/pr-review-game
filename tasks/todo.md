@@ -472,8 +472,8 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 
 **Acceptance criteria:**
 - [ ] A whole quarter can be played with only the keyboard on desktop.
-- [ ] `@axe-core/playwright` finds no serious or critical issues.
-- [ ] Every emoji-only control has an accessible name.
+- [x] `@axe-core/playwright` finds no serious or critical issues.
+- [x] Every emoji-only control has an accessible name.
 
 **Verification:**
 - [ ] Manual check: a keyboard-only playthrough and a contrast audit

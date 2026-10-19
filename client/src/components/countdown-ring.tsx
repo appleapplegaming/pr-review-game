@@ -1,6 +1,7 @@
 // A ring that empties as a PR's window runs out, with its m:ss label beside it. Pure presentation:
 // the caller computes the fraction and urgency (queue-rules.ts), so this never reads the clock.
-// The text label is the accessible value. The ring is decorative and is not a live region.
+// The ring is one image named by its time ("1:30 left to review"). The drawn parts are hidden from
+// assistive tech. The ring is not a live region, so the changing time is not announced on each tick.
 
 import styles from './countdown-ring.module.css';
 
@@ -19,7 +20,11 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 export function CountdownRing({ fraction, label, urgent }: CountdownRingProps) {
   const offset = CIRCUMFERENCE * (1 - Math.min(1, Math.max(0, fraction)));
   return (
-    <span className={urgent ? styles.urgent : styles.ring}>
+    <span
+      className={urgent ? styles.urgent : styles.ring}
+      role="img"
+      aria-label={`${label} left to review`}
+    >
       <svg className={styles.svg} viewBox="0 0 36 36" aria-hidden="true" focusable="false">
         <circle className={styles.track} cx="18" cy="18" r={RADIUS} />
         <circle
@@ -31,8 +36,9 @@ export function CountdownRing({ fraction, label, urgent }: CountdownRingProps) {
           strokeDashoffset={offset}
         />
       </svg>
-      <span className={styles.label}>{label}</span>
-      <span className={styles.sr}> left to review</span>
+      <span className={styles.label} aria-hidden="true">
+        {label}
+      </span>
     </span>
   );
 }

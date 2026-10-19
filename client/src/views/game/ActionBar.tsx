@@ -19,6 +19,7 @@ import {
   errorNotice,
   isTypingTarget,
   neighbourPrId,
+  nextSheetChoice,
   shortcutFor,
   type Baseline,
 } from './action-rules';
@@ -39,6 +40,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [baseline, setBaseline] = useState<Baseline | null>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const declineRef = useRef<HTMLButtonElement>(null);
 
   const enabled = canAct(pr, conn);
 
@@ -100,6 +102,8 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
           if (!current.sheetOpen) return;
           event.preventDefault();
           setSheetOpen(false);
+          // The sheet's choices leave the page when it closes, so hand focus back to its trigger.
+          declineRef.current?.focus();
           break;
       }
     }
@@ -112,6 +116,18 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
   useEffect(() => {
     if (sheetOpen) sheetRef.current?.querySelector('button')?.focus();
   }, [sheetOpen]);
+
+  // While the sheet is open, Tab and Shift+Tab cycle through its choices instead of leaving it.
+  // Escape (handled above) closes it and returns focus to the Decline button.
+  function trapTab(event: KeyboardEvent): void {
+    if (event.key !== 'Tab' || sheetRef.current === null) return;
+    const choices = Array.from(sheetRef.current.querySelectorAll('button'));
+    const current = choices.indexOf(document.activeElement as HTMLButtonElement);
+    const next = nextSheetChoice(current, choices.length, event.shiftKey);
+    if (next < 0) return;
+    event.preventDefault();
+    choices[next]?.focus();
+  }
 
   const notice = errorNotice(error, baseline, pr.id);
   if (pr.status !== 'open' && notice === null) return null;
@@ -133,6 +149,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
           <div className={styles.declineWrap}>
             <button
               type="button"
+              ref={declineRef}
               className={styles.decline}
               disabled={!enabled}
               aria-expanded={sheetOpen}
@@ -149,6 +166,7 @@ export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
                 role="group"
                 aria-label="Decline: pick the bug type"
                 className={styles.sheet}
+                onKeyDown={trapTab}
               >
                 <p className={styles.sheetTitle}>What is wrong with it?</p>
                 {DECLINE_OPTIONS.map((option) => (

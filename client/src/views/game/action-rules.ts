@@ -89,3 +89,14 @@ export function errorNotice(
   if (baseline.prId !== prId) return null;
   return error.seq > baseline.seq ? error.message : null;
 }
+
+/**
+ * The choice that Tab (or Shift+Tab) moves focus to inside the decline sheet, so focus cycles
+ * within the sheet while it is open. `index` is the focused choice, or -1 when focus is elsewhere.
+ * Returns -1 when the sheet has no choices.
+ */
+export function nextSheetChoice(index: number, count: number, backwards: boolean): number {
+  if (count <= 0) return -1;
+  if (index < 0 || index >= count) return backwards ? count - 1 : 0;
+  return backwards ? (index - 1 + count) % count : (index + 1) % count;
+}
