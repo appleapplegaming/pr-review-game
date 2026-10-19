@@ -153,20 +153,74 @@ describe('sound effects', () => {
 });
 
 describe('music', () => {
-  it('schedules a bar and loops on a timer, then stops', async () => {
-    const s = await load();
-    s.setMusicPlaying(true);
-    expect(oscillators.length).toBeGreaterThan(0);
-    expect(window.setInterval).toHaveBeenCalledOnce();
-    s.setMusicPlaying(false);
-    expect(window.clearInterval).toHaveBeenCalled();
+  class FakeAudio {
+    static all: FakeAudio[] = [];
+    src = '';
+    volume = 1;
+    paused = true;
+    handlers = new Map<string, () => void>();
+    played: string[] = [];
+    constructor() {
+      FakeAudio.all.push(this);
+    }
+    addEventListener(name: string, fn: () => void) {
+      this.handlers.set(name, fn);
+    }
+    removeEventListener(name: string) {
+      this.handlers.delete(name);
+    }
+    play() {
+      this.paused = false;
+      this.played.push(this.src);
+      return Promise.resolve();
+    }
+    pause() {
+      this.paused = true;
+    }
+    end() {
+      this.handlers.get('ended')?.();
+    }
+  }
+
+  beforeEach(() => {
+    FakeAudio.all = [];
+    vi.stubGlobal('Audio', FakeAudio);
   });
 
-  it('does not start when music is off', async () => {
+  it('plays every song once in a shuffled order, then reshuffles without an immediate repeat', async () => {
     const s = await load();
-    s.setPrefs({ music: false });
     s.setMusicPlaying(true);
-    expect(oscillators).toHaveLength(0);
-    expect(window.setInterval).not.toHaveBeenCalled();
+    const audio = FakeAudio.all[0] as FakeAudio;
+    expect(FakeAudio.all).toHaveLength(1);
+    for (let i = 0; i < 11; i++) audio.end();
+    const played = audio.played;
+    expect(played).toHaveLength(12);
+    for (let round = 0; round < 3; round++) {
+      expect(new Set(played.slice(round * 4, round * 4 + 4)).size).toBe(4);
+    }
+    for (let i = 1; i < played.length; i++) expect(played[i]).not.toBe(played[i - 1]);
+    expect(played.every((src) => src.endsWith('.mp3'))).toBe(true);
+    expect(played[0]).not.toMatch(/ /);
+  });
+
+  it('stops when asked and does not start when music is off', async () => {
+    const s = await load();
+    s.setMusicPlaying(true);
+    const audio = FakeAudio.all[0] as FakeAudio;
+    s.setMusicPlaying(false);
+    expect(audio.paused).toBe(true);
+    audio.end();
+    expect(audio.played).toHaveLength(1);
+
+    const off = await load();
+    off.setPrefs({ music: false });
+    off.setMusicPlaying(true);
+    expect(FakeAudio.all).toHaveLength(1);
+  });
+
+  it('does nothing without an Audio element', async () => {
+    vi.stubGlobal('Audio', undefined);
+    const s = await load();
+    expect(() => s.setMusicPlaying(true)).not.toThrow();
   });
 });

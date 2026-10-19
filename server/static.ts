@@ -26,6 +26,7 @@ const CONTENT_TYPES: Readonly<Record<string, string>> = {
   '.ico': 'image/x-icon',
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
+  '.mp3': 'audio/mpeg',
   '.txt': 'text/plain; charset=utf-8',
 };
 

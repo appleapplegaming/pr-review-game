@@ -72,6 +72,7 @@ function context(): AudioContext | null {
 export function unlockAudio(): void {
   const c = context();
   if (c !== null && c.state === 'suspended') void c.resume();
+  if (musicWanted) startMusic();
 }
 
 interface Note {
@@ -178,95 +179,71 @@ export function sfxQuarterEnd(good: boolean): void {
   if (getPrefs().sfx) playNotes(good ? SFX.win() : SFX.lose());
 }
 
-// --- Music: a four-bar minor-key loop (bass, arpeggio, soft kick/hat), scheduled a bar ahead. ---
+// --- Music: the songs in client/public, played in a shuffled order, one after the other. ---
 
-const BPM = 112;
-const STEP = 60 / BPM / 2; // eighth note
-const BASS = [110, 110, 87.31, 98]; // A2 A2 F2 G2 per bar
-const ARP = [
-  [220, 261.63, 329.63, 261.63],
-  [220, 261.63, 329.63, 261.63],
-  [174.61, 220, 261.63, 220],
-  [196, 246.94, 293.66, 246.94],
-];
+const TRACKS = [
+  '67 Skibidi Wallahi - TR3N TEN.mp3',
+  'Bomboclat Wallahi - TR3N TEN.mp3',
+  'Miguel Netanyahu - TR3N TEN.mp3',
+  'One Little Pigeon - TR3N TEN.mp3',
+].map((name) => `/${encodeURIComponent(name)}`);
+
+const MUSIC_VOLUME = 0.4;
+
+/** Fisher-Yates copy. */
+function shuffled<T>(items: readonly T[]): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j] as T, out[i] as T];
+  }
+  return out;
+}
 
 let musicWanted = false;
-let musicTimer: number | null = null;
-let musicBus: GainNode | null = null;
-let nextBar = 0;
-let barIndex = 0;
+let player: HTMLAudioElement | null = null;
+let queue: string[] = [];
+let lastTrack: string | null = null;
 
-function scheduleBar(): void {
-  const c = context();
-  if (c === null || musicBus === null) return;
-  const bar = barIndex % 4;
-  const t = nextBar;
-  const notes: Note[] = [];
-  for (let i = 0; i < 8; i++) {
-    const arp = ARP[bar]?.[i % 4] ?? 220;
-    notes.push({
-      freq: arp * 2,
-      at: t - c.currentTime + i * STEP,
-      dur: STEP * 0.8,
-      type: 'triangle',
-      gain: 0.05,
-    });
-    if (i % 2 === 0) {
-      notes.push({
-        freq: BASS[bar] ?? 110,
-        at: t - c.currentTime + i * STEP,
-        dur: STEP * 1.6,
-        type: 'sawtooth',
-        gain: 0.06,
-      });
-    }
-    if (i % 4 === 0) {
-      notes.push({
-        freq: 120,
-        at: t - c.currentTime + i * STEP,
-        dur: 0.12,
-        type: 'sine',
-        slideTo: 45,
-        gain: 0.2,
-      });
-    }
+/** Next track from the shuffled queue. A new shuffle never starts with the track just played. */
+function nextTrack(): string {
+  if (queue.length === 0) {
+    queue = shuffled(TRACKS);
+    if (queue.length > 1 && queue[0] === lastTrack) queue.push(queue.shift() as string);
   }
-  playNotes(notes, musicBus);
-  nextBar += STEP * 8;
-  barIndex++;
+  lastTrack = queue.shift() as string;
+  return lastTrack;
+}
+
+function playNext(): void {
+  if (player === null) return;
+  player.src = nextTrack();
+  void player.play().catch(() => {
+    // Autoplay was refused before a user gesture. The next unlock or toggle retries.
+  });
 }
 
 function startMusic(): void {
   musicWanted = true;
-  if (!getPrefs().music || musicTimer !== null) return;
-  const c = context();
-  if (c === null || master === null) return;
-  musicBus = c.createGain();
-  musicBus.gain.value = 0.5;
-  musicBus.connect(master);
-  nextBar = c.currentTime + 0.1;
-  barIndex = 0;
-  scheduleBar();
-  musicTimer = window.setInterval(() => {
-    // Keep about one bar queued ahead.
-    if (ctx !== null && nextBar - ctx.currentTime < STEP * 8) scheduleBar();
-  }, 500);
+  if (!getPrefs().music || typeof Audio === 'undefined') return;
+  if (player === null) {
+    player = new Audio();
+    player.volume = MUSIC_VOLUME;
+    player.addEventListener('ended', playNext);
+    playNext();
+  } else if (player.paused) {
+    void player.play().catch(() => {});
+  }
 }
 
 function stopMusic(): void {
-  if (musicTimer !== null) {
-    window.clearInterval(musicTimer);
-    musicTimer = null;
-  }
-  if (musicBus !== null && ctx !== null) {
-    const bus = musicBus;
-    bus.gain.setTargetAtTime(0, ctx.currentTime, 0.1);
-    window.setTimeout(() => bus.disconnect(), 600);
-    musicBus = null;
-  }
+  if (player === null) return;
+  player.removeEventListener('ended', playNext);
+  player.pause();
+  player = null;
 }
 
-/** The game screen is up: play the loop (if music is on) until `setMusicPlaying(false)`. */
+/** The game screen is up: play the songs (if music is on) until `setMusicPlaying(false)`. */
 export function setMusicPlaying(on: boolean): void {
   if (on) startMusic();
   else {
