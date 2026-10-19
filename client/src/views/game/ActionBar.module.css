@@ -92,3 +92,37 @@
 .option {
   text-align: left;
 }
+
+/* Phone: the bar fills the width so each thumb target is wide, and the decline sheet spans the bar
+   just above it instead of hanging off the Decline button. The sheet opens above the bar and
+   the tab bar, so neither covers it. */
+@media (max-width: 899.98px) {
+  .bar {
+    position: relative;
+  }
+
+  .buttons {
+    flex-wrap: nowrap;
+  }
+
+  .merge,
+  .declineWrap {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .merge,
+  .decline {
+    width: 100%;
+  }
+
+  .declineWrap {
+    position: static;
+  }
+
+  .sheet {
+    left: 0;
+    right: 0;
+    min-width: 0;
+  }
+}

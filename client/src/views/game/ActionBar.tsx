@@ -29,9 +29,11 @@ export interface ActionBarProps {
   /** The open queue, in the order the player moves through it with j and k. */
   queue: readonly PublicPr[];
   onSelect(prId: string): void;
+  /** False when the PR is hidden (a phone on another tab), so m and d must not act on it. */
+  keysActive: boolean;
 }
 
-export function ActionBar({ pr, queue, onSelect }: ActionBarProps) {
+export function ActionBar({ pr, queue, onSelect, keysActive }: ActionBarProps) {
   const conn = useStore((s) => s.conn);
   const error = useStore((s) => s.error);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -41,8 +43,8 @@ export function ActionBar({ pr, queue, onSelect }: ActionBarProps) {
   const enabled = canAct(pr, conn);
 
   // The keydown handler reads the latest values through this ref, so one listener serves every render.
-  const latest = useRef({ pr, queue, onSelect, enabled, sheetOpen });
-  latest.current = { pr, queue, onSelect, enabled, sheetOpen };
+  const latest = useRef({ pr, queue, onSelect, enabled, sheetOpen, keysActive });
+  latest.current = { pr, queue, onSelect, enabled, sheetOpen, keysActive };
 
   // Errors older than the selection of this PR are not shown for it. Acting also moves the baseline,
   // so an error only shows once, for the action that caused it.
@@ -85,12 +87,12 @@ export function ActionBar({ pr, queue, onSelect }: ActionBarProps) {
           break;
         }
         case 'merge':
-          if (!current.enabled) return;
+          if (!current.enabled || !current.keysActive) return;
           event.preventDefault();
           merge();
           break;
         case 'decline':
-          if (!current.enabled) return;
+          if (!current.enabled || !current.keysActive) return;
           event.preventDefault();
           setSheetOpen(true);
           break;

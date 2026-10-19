@@ -95,7 +95,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [ ] Two desktop browsers on `npm run dev` can play a full quarter by hand
 
 ### Phase 4: Phone, postmortem and polish
-- [ ] Task 20: Phone layout: tab bar, fixed action bar, 44 px targets, no horizontal scroll
+- [x] Task 20: Phone layout: tab bar, fixed action bar, 44 px targets, no horizontal scroll
 - [ ] Task 21: Postmortem view, bankruptcy banner and play again
 - [ ] Task 22: Accessibility pass (focus, contrast, `aria-live`, reduced motion)
 

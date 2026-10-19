@@ -429,13 +429,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Below 900 px, show a bottom tab bar (📥 Queue · 📄 PR · 📊 Dashboard). The Queue tab shows a badge with the number of open PRs, and the PR tab shows a dot when someone pings. On the PR view, the Merge and Decline bar stays fixed at the bottom. Every tap target is at least 44×44 px.
 
 **Acceptance criteria:**
-- [ ] At 390×844 the page never scrolls horizontally, including on the longest diff line in the pool.
-- [ ] Selecting a queue card switches to the PR tab. Toasts show on every tab.
-- [ ] Every interactive element measures at least 44×44 px.
+- [x] At 390×844 the page never scrolls horizontally, including on the longest diff line in the pool.
+- [x] Selecting a queue card switches to the PR tab. Toasts show on every tab.
+- [x] Every interactive element measures at least 44×44 px.
 
 **Verification:**
 - [ ] Manual check: Chrome devtools at 390×844 and a real iOS Safari device
-- [ ] Build succeeds: `npm run build`
+- [x] Build succeeds: `npm run build`
 
 **Dependencies:** Tasks 17, 18 and 19
 

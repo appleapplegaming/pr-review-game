@@ -48,3 +48,23 @@
 .prComments:empty {
   display: none;
 }
+
+/* Phone: Merge and Decline stay fixed above the tab bar. The article reserves room for the bar's
+   measured height (--actionbar-h, set by PrView), so the last lines of the PR can scroll clear. */
+@media (max-width: 899.98px) {
+  .actionBar:not(:empty) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--tabbar-total);
+    z-index: 6;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -0.25rem 0.75rem rgb(0 0 0 / 0.12);
+  }
+
+  .pr {
+    padding-bottom: calc(var(--actionbar-h, 0px) + var(--space-4));
+  }
+}

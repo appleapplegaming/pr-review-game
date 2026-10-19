@@ -52,3 +52,31 @@
     align-items: start;
   }
 }
+
+/* Below 900 px one column shows at a time, chosen by the tab bar. Hidden columns stay mounted. The
+   bottom padding keeps the last lines of a page clear of the fixed tab bar. */
+@media (max-width: 899.98px) {
+  .game {
+    padding-bottom: var(--tabbar-total);
+  }
+
+  .columns[data-tab='queue'] .review,
+  .columns[data-tab='queue'] .sidebar,
+  .columns[data-tab='pr'] .queue,
+  .columns[data-tab='pr'] .sidebar,
+  .columns[data-tab='dashboard'] .queue,
+  .columns[data-tab='dashboard'] .review {
+    display: none;
+  }
+
+  .review {
+    padding: var(--space-4) 0;
+    border: 0;
+    background: none;
+  }
+
+  .queue,
+  .sidebar {
+    padding: 0;
+  }
+}

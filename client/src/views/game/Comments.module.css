@@ -56,6 +56,9 @@
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
+  /* Never below 16px: iOS zooms the page when a field smaller than that gets focus. The diff
+     around it is 14px, so this cannot inherit. */
+  font-size: 1rem;
   resize: vertical;
 }
 

@@ -12,6 +12,9 @@
   --space-4: 1rem;
   --space-6: 1.5rem;
   --radius: 0.5rem;
+  /* Phone tab bar height, and the same plus the iPhone home-indicator inset. */
+  --tabbar-h: 3.5rem;
+  --tabbar-total: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
   --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
@@ -49,4 +52,13 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   line-height: 1.5;
+}
+
+/* On a phone, the bars step aside while a text field has focus, so the on-screen keyboard never
+   covers the comment box or the decline sheet's bar. Set by views/game/use-typing.ts. */
+@media (max-width: 899.98px) {
+  :root[data-typing='yes'] [data-slot='tab-bar'],
+  :root[data-typing='yes'] [data-slot='action-bar'] {
+    display: none;
+  }
 }

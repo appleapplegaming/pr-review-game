@@ -6,6 +6,7 @@
 //  - onLineSelect / renderAfterLine (Task 18): forwarded to DiffView for per-line comments.
 
 import type { ComponentChildren } from 'preact';
+import { useEffect, useRef } from 'preact/hooks';
 import type { DiffLine } from '../../../../shared/diff';
 import type { PublicPlayer, PublicPr } from '../../../../shared/types';
 import { DiffView } from '../../components/diff-view';
@@ -39,9 +40,24 @@ export function PrView({
   const timer = countdown({ expiresAt: pr.expiresAt, spawnAt: pr.spawnAt, now });
   const others = viewerNames(pr.viewers, players, myId);
   const open = pr.status === 'open';
+  const articleRef = useRef<HTMLElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  // On a phone the action bar is fixed to the screen. Track its height, so the article can leave
+  // room for it at the bottom. The bar's height changes when a rejection notice appears.
+  useEffect(() => {
+    const article = articleRef.current;
+    const bar = barRef.current;
+    if (article === null || bar === null || typeof ResizeObserver === 'undefined') return;
+    const sync = () => article.style.setProperty('--actionbar-h', `${bar.offsetHeight}px`);
+    const observer = new ResizeObserver(sync);
+    observer.observe(bar);
+    sync();
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <article className={styles.pr} aria-labelledby="pr-title">
+    <article ref={articleRef} className={styles.pr} aria-labelledby="pr-title">
       <header className={styles.header}>
         <p className={styles.kicker}>
           {pr.area} · {pr.author}
@@ -73,7 +89,7 @@ export function PrView({
         renderAfterLine={renderAfterLine}
       />
 
-      <div className={styles.actionBar} data-slot="action-bar">
+      <div ref={barRef} className={styles.actionBar} data-slot="action-bar">
         {actionBar}
       </div>
       <div className={styles.prComments} data-slot="pr-comments">

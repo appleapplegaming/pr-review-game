@@ -1,5 +1,7 @@
 // The game screen: queue on the left, the selected PR in the middle, a sidebar on the right.
-// From 900 px wide the three columns sit side by side. Narrower, they stack (Task 20 refines phones).
+// From 900 px wide the three columns sit side by side. Narrower, one column shows at a time, picked
+// by the tab bar (queue, PR or dashboard). Hidden columns stay mounted, so drafts and the open diff
+// line survive a tab switch.
 //
 // This file owns selection, the clock tick and presence. Presence sends `open` for the selected PR
 // from an effect, so it is sent once per selection and again after every reconnect.
@@ -10,9 +12,11 @@
 //  - Toasts are mounted once by app.tsx, not here.
 
 import { useEffect, useState } from 'preact/hooks';
+import { useSyncExternalStore } from 'preact/compat';
 import { config } from '../../../../shared/config';
 import { net } from '../../net/live';
 import { serverTime } from '../../net/store';
+import { useMediaQuery } from '../../net/use-media';
 import { useStore } from '../../net/use-store';
 import { openQueue } from './queue-rules';
 import { ActionBar } from './ActionBar';
@@ -22,8 +26,12 @@ import { LineComments } from './LineComments';
 import { PrComments } from './PrComments';
 import { PrView } from './PrView';
 import { Queue } from './Queue';
+import { TabBar } from './TabBar';
 import { commentsOn } from './comment-rules';
+import { pingTracker } from './ping-dot';
+import { keysActive, pingDotVisible, type PhoneTab } from './tab-rules';
 import { useDiscussion } from './use-discussion';
+import { useTyping } from './use-typing';
 import styles from './GameScreen.module.css';
 
 export function GameScreen() {
@@ -32,6 +40,16 @@ export function GameScreen() {
   const myId = useStore((s) => s.session?.playerId ?? null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [now, setNow] = useState(() => serverTime());
+  const [tab, setTab] = useState<PhoneTab>('queue');
+  const wide = useMediaQuery('(min-width: 900px)');
+  const pings = useSyncExternalStore(pingTracker.subscribe, pingTracker.getState).unseen;
+
+  useTyping();
+
+  // A ping is seen once the PR tab is up, or at once on a wide screen where the PR is always shown.
+  useEffect(() => {
+    if (wide || tab === 'pr') pingTracker.clear();
+  }, [wide, tab, pings]);
 
   // One shared ticker for every countdown on the screen.
   useEffect(() => {
@@ -60,6 +78,12 @@ export function GameScreen() {
 
   if (room === null) return null;
 
+  // Choosing a card in the queue opens its PR. On a phone that means switching to the PR tab.
+  function openPr(prId: string) {
+    setSelectedId(prId);
+    setTab('pr');
+  }
+
   return (
     <section className={styles.game} aria-labelledby="game-title">
       <header className={styles.header}>
@@ -69,7 +93,7 @@ export function GameScreen() {
         </h1>
       </header>
 
-      <div className={styles.columns}>
+      <div className={styles.columns} data-tab={tab}>
         <aside className={styles.queue} aria-label="Queue">
           <Queue
             prs={queue}
@@ -77,7 +101,7 @@ export function GameScreen() {
             myId={myId}
             now={now}
             selectedId={selectedPrId}
-            onSelect={setSelectedId}
+            onSelect={openPr}
           />
         </aside>
 
@@ -92,7 +116,14 @@ export function GameScreen() {
               players={room.players}
               myId={myId}
               now={now}
-              actionBar={<ActionBar pr={selected} queue={queue} onSelect={setSelectedId} />}
+              actionBar={
+                <ActionBar
+                  pr={selected}
+                  queue={queue}
+                  onSelect={setSelectedId}
+                  keysActive={keysActive(wide, tab)}
+                />
+              }
               selectedLine={discussion.selectedLine}
               onLineSelect={discussion.selectLine}
               renderAfterLine={(line) => (
@@ -132,6 +163,13 @@ export function GameScreen() {
           <ActivityFeed />
         </aside>
       </div>
+
+      <TabBar
+        active={tab}
+        openCount={queue.length}
+        pingDot={pingDotVisible(pings, tab)}
+        onSelect={setTab}
+      />
     </section>
   );
 }
