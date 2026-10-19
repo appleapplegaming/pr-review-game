@@ -65,7 +65,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [x] Task 5: Decisions: merge and decline outcomes, first decision wins, presence
 - [x] Task 6: Tick: spawns, auto-merge, delayed incidents, uptime and quarter end
 - [x] Task 7: Comments and second-opinion pings
-- [ ] Task 8: Public state projection (answer-key boundary)
+- [x] Task 8: Public state projection (answer-key boundary)
 - [ ] Task 9: Postmortem report, badges and team stats
 
 ### Checkpoint B: Engine complete

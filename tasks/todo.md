@@ -161,12 +161,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `toPublicState(state, now)`, which returns `PublicRoomState`. It includes the queue (spawned PRs only), each PR's status and decider, viewers, comment counts, highlights, metrics, time remaining and players. It never includes bug data, and it never includes PRs that haven't spawned yet.
 
 **Acceptance criteria:**
-- [ ] A test deep-scans the output of a state full of buggy PRs and finds no `bug`, `lines`, `explanation`, `severity` or incident strings.
-- [ ] PRs that haven't spawned yet don't appear, so the client can't see what's coming.
-- [ ] The output is JSON-serializable, with no `Map` or `Set` values left in it.
+- [x] A test deep-scans the output of a state full of buggy PRs and finds no `bug`, `lines`, `explanation`, `severity` or incident strings.
+- [x] PRs that haven't spawned yet don't appear, so the client can't see what's coming.
+- [x] The output is JSON-serializable, with no `Map` or `Set` values left in it.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/projection.test.ts`
+- [x] Tests pass: `npx vitest run tests/engine/projection.test.ts`
 
 **Dependencies:** Task 5
 
