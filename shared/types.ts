@@ -10,6 +10,9 @@ export type Severity = (typeof SEVERITIES)[number];
 export const AREAS = ['payments', 'auth', 'infra', 'ui', 'data', 'api'] as const;
 export type Area = (typeof AREAS)[number];
 
+export const LANGUAGES = ['ts'] as const;
+export type Language = (typeof LANGUAGES)[number];
+
 // The answer key. Server and postmortem only. Never referenced by public types.
 export interface Bug {
   type: BugType;
@@ -27,7 +30,7 @@ export interface PullRequest {
   author: string;
   area: Area;
   description: string;
-  language: 'ts';
+  language: Language;
   diff: string;
   featureValue: number;
   bug: Bug | null;
@@ -64,6 +67,7 @@ export interface PublicPr {
   author: string;
   area: Area;
   description: string;
+  language: Language;
   diff: string;
   featureValue: number;
   spawnAt: number;

@@ -264,7 +264,7 @@ type ServerMsg =
 - A confirm step happens only through the decline type sheet, so merging stays one tap.
 
 **Queue cards show:**
-- the title and area tag
+- the title, area tag and language tag (e.g. `TS`), so players see the language before opening the PR
 - a countdown ring that turns red under 20 s
 - 👀 viewers
 - the 💬 count

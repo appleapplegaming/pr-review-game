@@ -4,6 +4,7 @@ import {
   BUG_TYPES,
   SEVERITIES,
   type Area,
+  type Language,
   type BugType,
   type Bug,
   type PullRequest,
@@ -21,6 +22,11 @@ describe('shared domain types', () => {
     expectTypeOf<(typeof BUG_TYPES)[number]>().toEqualTypeOf<BugType>();
     expectTypeOf<(typeof SEVERITIES)[number]>().toEqualTypeOf<Severity>();
     expectTypeOf<(typeof AREAS)[number]>().toEqualTypeOf<Area>();
+  });
+
+  it('exposes the language on PublicPr so the queue can show it', () => {
+    expectTypeOf<PublicPr['language']>().toEqualTypeOf<Language>();
+    expectTypeOf<PullRequest['language']>().toEqualTypeOf<Language>();
   });
 
   it('keeps the answer key out of PublicPr', () => {
