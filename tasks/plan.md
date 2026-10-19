@@ -77,11 +77,11 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 - [x] Task 10: Room registry: codes, join and rejoin, host handover, cleanup, play again
 - [x] Task 11: WebSocket layer: validation, rate limit, broadcast and tick loop
 - [x] Task 12: HTTP server: static client, `/r/:code`, WebSocket upgrade, `PORT`
-- [ ] Task 13: Protocol integration tests: full game, leak, reconnect, handover, rate limit
+- [x] Task 13: Protocol integration tests: full game, leak, reconnect, handover, rate limit
 
 ### Checkpoint C: Headless game works
-- [ ] Scripted `ws` clients play a time-scaled quarter through to the postmortem
-- [ ] The no-leak integration test is green
+- [x] Scripted `ws` clients play a time-scaled quarter through to the postmortem
+- [x] The no-leak integration test is green
 
 ### Phase 3: Client (vertical slices)
 - [x] Task 14: Client scaffold and net layer: socket, reconnect, clock offset, store

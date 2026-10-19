@@ -271,12 +271,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write the integration tests from SPEC → Testing Strategy. They run real `ws` clients against `startServer()` with fake timers or time scaling.
 
 **Acceptance criteria:**
-- [ ] Three clients create a room, join, start, merge, decline, comment and ping, and every client receives an identical `postmortem`.
-- [ ] A leak test records every message sent before `postmortem` and checks it against the leak rule in SPEC → Content rules. It also checks that the allowed exceptions (fired incident text, the catch toast) show up only after their PR is resolved.
-- [ ] Reconnecting with a `playerId` puts the player back in the same seat. When the host disconnects, host passes to the next player, and the rate limit works end to end.
+- [x] Three clients create a room, join, start, merge, decline, comment and ping, and every client receives an identical `postmortem`.
+- [x] A leak test records every message sent before `postmortem` and checks it against the leak rule in SPEC → Content rules. It also checks that the allowed exceptions (fired incident text, the catch toast) show up only after their PR is resolved.
+- [x] Reconnecting with a `playerId` puts the player back in the same seat. When the host disconnects, host passes to the next player, and the rate limit works end to end.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/integration`
+- [x] Tests pass: `npx vitest run tests/integration`
 
 **Dependencies:** Task 12
 
@@ -285,7 +285,7 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Estimated scope:** Medium
 
 ## Checkpoint C: Headless game works
-- [ ] Full suite green, including the leak test
+- [x] Full suite green, including the leak test
 - [ ] Human review of the protocol behaviour before UI work
 
 ---
