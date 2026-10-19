@@ -68,13 +68,29 @@ export function GameScreen() {
   }, [tab, wide, selectedId]);
 
   const queue = room === null ? [] : openQueue(room.prs);
-  // Keep the chosen PR even after it resolves (it shows the result). Fall back to the top of the
-  // queue when nothing is chosen or the chosen PR has left the room.
+  // The chosen PR closes once it resolves (merged, declined or auto-merged, by anyone): the view
+  // moves on to the top of the queue. The result still reaches players through toasts and the feed.
   const selected =
-    room === null ? null : (room.prs.find((p) => p.id === selectedId) ?? queue[0] ?? null);
+    room === null ? null : (queue.find((p) => p.id === selectedId) ?? queue[0] ?? null);
 
   const selectedPrId = selected?.id ?? null;
-  const selectedOpen = selected?.status === 'open';
+  const selectedOpen = selected !== null;
+
+  // The resolved PR's buttons are gone, so focus would drop to <body>. Hand it to the new PR's
+  // heading, unless focus is somewhere real (a comment box) that another player's action must not
+  // steal it from.
+  const lastPrId = useRef<string | null>(null);
+  useEffect(() => {
+    const before = lastPrId.current;
+    lastPrId.current = selectedPrId;
+    if (before === null || selectedPrId === null || before === selectedPrId) return;
+    if (wide || tab === 'pr') {
+      const active = document.activeElement;
+      if (active === null || active === document.body) {
+        document.querySelector<HTMLElement>('#pr-title')?.focus();
+      }
+    }
+  }, [selectedPrId, wide, tab]);
   const discussion = useDiscussion(selectedPrId);
 
   // Presence. Opening a PR is sent only while it is open. The server ignores opens on resolved PRs

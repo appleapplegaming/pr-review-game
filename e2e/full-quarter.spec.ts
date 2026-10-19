@@ -53,10 +53,13 @@ test('a desktop and a phone player finish a quarter together', async ({ browser 
   // The desktop player merges eight PRs as they come up. Every other PR runs out its timer.
   for (let merged = 0; merged < 8; merged++) {
     await queue(desktop.page).getByRole('button').first().click();
+    const heading = desktop.page.locator('#pr-title');
+    const title = await heading.innerText();
     await desktop.page.getByRole('button', { name: /^Merge/ }).click();
-    await expect(desktop.page.getByRole('status').filter({ hasText: /^Merged/ })).toBeVisible();
-    // The Merge button is gone, so focus moves to the PR heading instead of dropping to <body>.
-    await expect(desktop.page.getByRole('heading', { level: 2 }).first()).toBeFocused();
+    // The merged PR closes: its title leaves the view and focus moves to the next PR's heading
+    // (or the empty state) instead of dropping to <body>.
+    await expect(desktop.page.getByRole('heading', { level: 2, name: title })).toHaveCount(0);
+    if ((await heading.count()) > 0) await expect(heading).toBeFocused();
   }
 
   await waitForPostmortem(desktop.page);
