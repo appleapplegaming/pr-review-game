@@ -20,6 +20,7 @@ import type {
 import { config } from '../../shared/config';
 import { computeUptime } from '../../shared/money';
 import type { GameState, ServerPr } from './state';
+import { isHighlighted } from './collab';
 
 function copyComment(comment: Comment): Comment {
   return {
@@ -61,8 +62,8 @@ function toPublicPr(entry: ServerPr): PublicPr {
     resolution: entry.resolution === null ? null : copyResolution(entry.resolution),
     viewers: [...entry.viewers],
     comments: entry.comments.map(copyComment),
-    // A second-opinion ping highlights the PR until it resolves.
-    highlighted: entry.status === 'open' && entry.pings.length > 0,
+    // A second-opinion ping highlights the PR until it resolves (collab.ts owns the rule).
+    highlighted: isHighlighted(entry),
   };
 }
 
