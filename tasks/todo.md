@@ -181,13 +181,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `postmortem(state)`. It builds the six sections in the order the spec gives. "What slipped through" is sorted by damage (SPEC → Postmortem) and lists the merger or "nobody reviewed it", the comment thread and the pings. The other sections are great catches, right call wrong reason, lost revenue, team stats, the badge and the bankruptcy flag.
 
 **Acceptance criteria:**
-- [ ] There's a test for each badge threshold, including the exact boundary values (99.99%, 99.9%, 99%, 0 breaches and 1 breach).
-- [ ] A missed bug that a player flagged on line N shows the comment and ping history needed for "Sara flagged line 42, Tom merged it anyway".
-- [ ] Team stats per player (merged, declined, comments, catches, misses) add up to the totals in the action log.
+- [x] There's a test for each badge threshold, including the exact boundary values (99.99%, 99.9%, 99%, 0 breaches and 1 breach).
+- [x] A missed bug that a player flagged on line N shows the comment and ping history needed for "Sara flagged line 42, Tom merged it anyway".
+- [x] Team stats per player (merged, declined, comments, catches, misses) add up to the totals in the action log.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/postmortem.test.ts`
-- [ ] `npx vitest run --coverage server/engine` shows ≥ 90% line coverage
+- [x] Tests pass: `npx vitest run tests/engine/postmortem.test.ts`
+- [x] `npx vitest run --coverage server/engine` shows ≥ 90% line coverage
 
 **Dependencies:** Tasks 6 and 7
 
