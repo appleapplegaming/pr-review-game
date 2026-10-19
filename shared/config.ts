@@ -47,6 +47,7 @@ export const config = {
   // Content validation
   featureValue: { min: 200_000, max: 2_000_000 },
   diffLines: { min: 10, max: 40 },
+  contentLineMax: 70, // characters per diff line, including the +/-/space prefix
 
   // Client
   toastMs: 4000,

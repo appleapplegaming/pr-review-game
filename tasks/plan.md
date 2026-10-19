@@ -53,9 +53,9 @@ shared/ (types, config, protocol, money format)
 Full detail for each task (acceptance criteria, verification, files and size) is in [`tasks/todo.md`](todo.md).
 
 ### Phase 0: Foundation
-- [ ] Task 1: Project scaffold and toolchain
-- [ ] Task 2: Shared types, config, protocol and money formatting
-- [ ] Task 3: Diff parser, PR content schema, validator and four seed PRs
+- [x] Task 1: Project scaffold and toolchain
+- [x] Task 2: Shared types, config, protocol and money formatting
+- [x] Task 3: Diff parser, PR content schema, validator and four seed PRs
 
 ### Checkpoint A: Foundation
 - [ ] `npm run typecheck && npm run lint && npm test` are green on a clean clone

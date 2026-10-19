@@ -13,12 +13,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Set up an empty TypeScript project with three areas (`shared`, `server`, `client`) using strict TypeScript. Every npm script from SPEC → Commands should exist and run, even when there's almost nothing for it to do yet.
 
 **Acceptance criteria:**
-- [ ] `npm install` works on Node 22, and `engines.node` is set to `>=22`.
-- [ ] `typecheck`, `lint`, `test`, `build`, `dev`, `start` and `test:e2e` scripts exist. `test` runs a placeholder Vitest test.
-- [ ] `strict` is on, `noUncheckedIndexedAccess` is on, and ESLint bans `any` (`@typescript-eslint/no-explicit-any: error`).
+- [x] `npm install` works on Node 22, and `engines.node` is set to `>=22`.
+- [x] `typecheck`, `lint`, `test`, `build`, `dev`, `start` and `test:e2e` scripts exist. `test` runs a placeholder Vitest test.
+- [x] `strict` is on, `noUncheckedIndexedAccess` is on, and ESLint bans `any` (`@typescript-eslint/no-explicit-any: error`).
 
 **Verification:**
-- [ ] `npm run typecheck && npm run lint && npm test` all pass.
+- [x] `npm run typecheck && npm run lint && npm test` all pass.
 - [ ] Manual check: a fresh clone followed by `npm install` has no warnings about the engine version.
 
 **Dependencies:** None
@@ -34,13 +34,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write the shared contract. This covers the domain types (`PullRequest`, `Bug`, `BugType`, `Severity`, `Area`), the server-only and public state types, `GameEvent`, `Postmortem` and `ErrorCode`. It also covers `ClientMsg`/`ServerMsg` exactly as the spec defines them, every balance number in `shared/config.ts`, and `formatMoney()`.
 
 **Acceptance criteria:**
-- [ ] Every number in SPEC → Game Rules is in `shared/config.ts`, with no magic numbers anywhere else.
-- [ ] `PublicRoomState` and `PublicPr` can't refer to `Bug` (a type-level test checks this with `expectTypeOf`).
-- [ ] `formatMoney()` turns whole dollars into strings like `$10.4M`, `$150k` and `$0`, and unit tests cover it.
+- [x] Every number in SPEC → Game Rules is in `shared/config.ts`, with no magic numbers anywhere else.
+- [x] `PublicRoomState` and `PublicPr` can't refer to `Bug` (a type-level test checks this with `expectTypeOf`).
+- [x] `formatMoney()` turns whole dollars into strings like `$10.4M`, `$150k` and `$0`, and unit tests cover it.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/shared`
-- [ ] `npm run typecheck`
+- [x] Tests pass: `npx vitest run tests/shared`
+- [x] `npm run typecheck`
 
 **Dependencies:** Task 1
 
@@ -55,12 +55,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `parseDiff()`, which turns a diff string into rendered lines. It skips `@@` headers, labels each line as `+`, `-` or context, and numbers lines from 1. Write a `validatePr()` that runs every per-PR rule from SPEC → Testing Strategy. Seed the pool with one clean PR and one of each bug type so the engine has real content to test against.
 
 **Acceptance criteria:**
-- [ ] The spec's `pay-004` example parses so that `bug.lines: [6]` points at a `+` line.
-- [ ] The validator catches duplicate ids, diffs outside 10–40 lines, `bug.lines` that are out of range or point at a non-`+` line, `featureValue` outside $0.2M–$2M, and a bad type or severity. Each check has a negative test.
-- [ ] `content/prs/index.ts` exports the pool, and all four seed PRs pass validation.
+- [x] The spec's `pay-004` example parses so that `bug.lines: [6]` points at a `+` line.
+- [x] The validator catches duplicate ids, diffs outside 10–40 lines, `bug.lines` that are out of range or point at a non-`+` line, `featureValue` outside $0.2M–$2M, and a bad type or severity. Each check has a negative test.
+- [x] `content/prs/index.ts` exports the pool, and all four seed PRs pass validation.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/content`
+- [x] Tests pass: `npx vitest run tests/content`
 
 **Dependencies:** Task 2
 
