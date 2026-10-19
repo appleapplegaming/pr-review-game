@@ -229,13 +229,13 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `ws.ts`. It parses and validates every `ClientMsg` with `zod` schemas and replies `error` to anything invalid. It limits each connection to 10 messages per second. It sends `welcome` with `serverNow`, broadcasts `state`, `event` and `postmortem` to the room, and runs a 250 ms tick for each active room that broadcasts only when something changed.
 
 **Acceptance criteria:**
-- [ ] A type test shows the schemas' inferred types match `ClientMsg`.
-- [ ] Malformed JSON, an unknown `t`, wrong field types or extra-long strings each get an `error` reply, and the socket stays open.
-- [ ] The 11th message within one second is dropped with a `RATE_LIMITED` error.
-- [ ] The tick loop stops when a room has no game running, so there are no timers left behind after cleanup.
+- [x] A type test shows the schemas' inferred types match `ClientMsg`.
+- [x] Malformed JSON, an unknown `t`, wrong field types or extra-long strings each get an `error` reply, and the socket stays open.
+- [x] The 11th message within one second is dropped with a `RATE_LIMITED` error.
+- [x] The tick loop stops when a room has no game running, so there are no timers left behind after cleanup.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/validate.test.ts tests/ws.test.ts`
+- [x] Tests pass: `npx vitest run tests/server/validate.test.ts tests/server/ws.test.ts`
 
 **Dependencies:** Task 10
 

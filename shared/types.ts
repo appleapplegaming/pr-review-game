@@ -206,4 +206,5 @@ export type ErrorCode =
   | 'PR_NOT_OPEN'
   | 'INVALID_COMMENT'
   | 'PING_COOLDOWN'
-  | 'INVALID_COMPANY_NAME';
+  | 'INVALID_COMPANY_NAME'
+  | 'SERVER_ERROR';

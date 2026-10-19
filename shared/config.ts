@@ -43,6 +43,7 @@ export const config = {
   // Server
   tickMs: 250,
   roomCleanupMs: 1_800_000, // 30 min after the last player leaves
+  maxMessageBytes: 4_096, // largest client frame; a 280-char comment is at most about 1,120 bytes
 
   // Content validation
   featureValue: { min: 200_000, max: 2_000_000 },
