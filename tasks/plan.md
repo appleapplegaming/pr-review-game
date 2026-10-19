@@ -62,7 +62,7 @@ Full detail for each task (acceptance criteria, verification, files and size) is
 
 ### Phase 1: Game engine (pure, TDD)
 - [x] Task 4: Quarter setup: seeded RNG, PR draw and spawn schedule
-- [ ] Task 5: Decisions: merge and decline outcomes, first decision wins, presence
+- [x] Task 5: Decisions: merge and decline outcomes, first decision wins, presence
 - [ ] Task 6: Tick: spawns, auto-merge, delayed incidents, uptime and quarter end
 - [ ] Task 7: Comments and second-opinion pings
 - [ ] Task 8: Public state projection (answer-key boundary)

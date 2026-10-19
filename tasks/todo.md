@@ -101,12 +101,12 @@ A task is done only when its acceptance criteria are met **and** it passes the s
 **Description:** Write `applyIntent` for `open`, `merge` and `decline`. It covers all five outcomes in the Decisions table, schedules incidents 4–12 s after a buggy merge, rejects any second decision with the first decider's name, and records `open` as presence only.
 
 **Acceptance criteria:**
-- [ ] There's a test for each of the five rows of the outcome table, covering value changes, the +$150k bonus, lost revenue and "right call, wrong reason".
-- [ ] A second merge or decline on a resolved PR is rejected as `PR_NOT_OPEN`, with the name of whoever resolved it first.
-- [ ] A buggy merge schedules one pending incident with `fireAt` between now + 4 s and now + 12 s, using the RNG.
+- [x] There's a test for each of the five rows of the outcome table, covering value changes, the +$150k bonus, lost revenue and "right call, wrong reason".
+- [x] A second merge or decline on a resolved PR is rejected as `PR_NOT_OPEN`, with the name of whoever resolved it first.
+- [x] A buggy merge schedules one pending incident with `fireAt` between now + 4 s and now + 12 s, using the RNG.
 
 **Verification:**
-- [ ] Tests pass: `npx vitest run tests/engine/decisions.test.ts`
+- [x] Tests pass: `npx vitest run tests/engine/decisions.test.ts`
 
 **Dependencies:** Task 4
 
