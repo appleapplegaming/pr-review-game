@@ -54,6 +54,7 @@ function toPublicPr(entry: ServerPr): PublicPr {
     author: pr.author,
     area: pr.area,
     description: pr.description,
+    language: pr.language,
     diff: pr.diff,
     featureValue: pr.featureValue,
     spawnAt: entry.spawnAt,

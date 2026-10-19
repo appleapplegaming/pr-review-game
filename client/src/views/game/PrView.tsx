@@ -8,7 +8,7 @@
 import type { ComponentChildren } from 'preact';
 import { useEffect, useRef } from 'preact/hooks';
 import type { DiffLine } from '../../../../shared/diff';
-import type { PublicPlayer, PublicPr } from '../../../../shared/types';
+import { LANGUAGE_LABEL, type PublicPlayer, type PublicPr } from '../../../../shared/types';
 import { DiffView } from '../../components/diff-view';
 import { CountdownRing } from '../../components/countdown-ring';
 import { countdown, viewerNames } from './queue-rules';
@@ -73,7 +73,7 @@ export function PrView({
     <article ref={articleRef} className={styles.pr} aria-labelledby="pr-title">
       <header className={styles.header}>
         <p className={styles.kicker}>
-          {pr.area} · {pr.author}
+          {pr.area} · {LANGUAGE_LABEL[pr.language]} · {pr.author}
         </p>
         <h2 id="pr-title" ref={titleRef} tabIndex={-1} className={styles.title}>
           {pr.title}

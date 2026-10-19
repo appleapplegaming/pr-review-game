@@ -1,6 +1,6 @@
 # Content authoring guide
 
-The pool has **30 PRs** across six areas (`payments`, `auth`, `infra`, `ui`, `data`, `api`). Each PR is one file: `content/prs/<id>.ts`, exporting `pr`. The pool is exported from `content/prs/index.ts`. `validatePr()` in `content/validate.ts` checks every rule below.
+The pool has **46 PRs** (30 TypeScript, 8 Java, 8 Python) across six areas (`payments`, `auth`, `infra`, `ui`, `data`, `api`). Each PR is one file: `content/prs/<id>.ts`, exporting `pr`. The pool is exported from `content/prs/index.ts`. `validatePr()` in `content/validate.ts` checks every rule below.
 
 ```ts
 import type { PullRequest } from '../../shared/types';
@@ -11,7 +11,7 @@ export const pr: PullRequest = {
   author: 'dana.k',              // fictional handle
   area: 'payments',
   description: 'One sentence on what the PR does.',
-  language: 'ts',
+  language: 'ts',                // 'ts' | 'java' | 'python'
   diff: `
 @@ checkout/total.ts @@
  context line
@@ -38,7 +38,7 @@ The spec's `pay-004` example is illustrative only. Its diff has 8 rendered lines
 - **Findable:** A careful reviewer finds the bug in about 60 s on a phone. Nothing depends on knowledge outside the diff: no library internals, no company policy, no external facts.
 - **Line length:** no line over about 70 characters.
 - **Value:** `featureValue` is an integer in dollars from 200_000 to 2_000_000. Bigger features get bigger diffs (roughly 10–15 lines at the low end, 30–40 at the high end).
-- **Language:** all TypeScript (`language: 'ts'`).
+- **Language:** `'ts'`, `'java'` or `'python'`. The PR file is always a `.ts` module; only the diff text is in the PR's language. Use plain, idiomatic code that any mid-level dev can read, and a matching `@@ path @@` header (`.java` / `.py`). Java gets wordy, so watch the 70-character limit.
 - **Clean PRs:** `bug: null`. Some clean PRs should look suspicious (scary-looking but correct), so that declining everything is not a strategy.
 - **Answer key:** bug lines and explanations never reach clients before the postmortem. Write them as if a player could read them.
 
@@ -96,9 +96,20 @@ Seeds are from Task 3 and already exist. The others are assigned to batches.
 | ui-004 | ui | C | outage | minor | `useEffect` missing a dependency, causing a fetch loop on the dashboard |
 | ui-005 | ui | C | money | critical | Pay button not disabled in flight, so slow networks double-charge |
 
-## Pool mix check
+## Java and Python batches
 
-Counts from the matrix above, with the seeds included:
+Eight PRs per language, each with 2 clean, 2 money, 2 security and 2 outage. Ids continue each area's numbering (`pay-006` onward).
+
+| language | clean | money | security | outage | ids |
+|---|---|---|---|---|---|
+| Java | 2 | 2 | 2 | 2 | pay-006, pay-007, auth-006, auth-007, data-006, data-007, api-006, infra-006 |
+| Python | 2 | 2 | 2 | 2 | pay-008, pay-009, auth-008, auth-009, data-008, data-009, api-007, ui-006 |
+
+The 9/7/7/7 mix below describes the 30 TypeScript PRs. The game still draws its quarter from the whole pool, so any language can show up in a quarter.
+
+## Pool mix check (TypeScript PRs)
+
+Counts from the matrix above, with the seeds included (TypeScript only):
 
 | area | clean | money | security | outage | total |
 |---|---|---|---|---|---|
@@ -123,7 +134,7 @@ Counts from the matrix above, with the seeds included:
 - [ ] `featureValue` is an integer from 200_000 to 2_000_000, and the diff size fits the feature
 - [ ] The bug is findable in about 60 s on a phone, using only the diff
 - [ ] `explanation` is one paragraph; `incident` starts with the type emoji and ends with the impact
-- [ ] Looks like real TypeScript; `language: 'ts'`; author handle is fictional
+- [ ] Looks like real code in its language; `language` matches the diff; author handle is fictional
 - [ ] For clean PRs marked suspicious: the scary-looking part is actually correct
 - [ ] Imports `PullRequest` from `../../shared/types` and exports `pr`
 - [ ] `validatePr()` passes; `npx vitest run tests/content` passes

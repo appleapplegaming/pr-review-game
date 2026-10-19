@@ -2,7 +2,14 @@
 // the authoring guide (content/README.md) is checked here. Rules that need a human
 // (realism, "findable in about 60 s", "looks suspicious but is correct") are not.
 
-import { AREAS, BUG_TYPES, SEVERITIES, type Area, type PullRequest } from '../shared/types';
+import {
+  AREAS,
+  BUG_TYPES,
+  LANGUAGES,
+  SEVERITIES,
+  type Area,
+  type PullRequest,
+} from '../shared/types';
 import { parseDiff } from '../shared/diff';
 import { config } from '../shared/config';
 
@@ -57,8 +64,11 @@ export function validatePr(pr: PullRequest): ValidationIssue[] {
       `id "${pr.id}" must be <area-prefix>-<nnn> with the prefix for "${pr.area}"`,
     );
   }
-  if (pr.language !== 'ts') {
-    report('language', `language must be "ts", got "${String(pr.language)}"`);
+  if (!(LANGUAGES as readonly string[]).includes(pr.language)) {
+    report(
+      'language',
+      `language must be one of ${LANGUAGES.join(', ')}, got "${String(pr.language)}"`,
+    );
   }
 
   const lines = parseDiff(pr.diff);
