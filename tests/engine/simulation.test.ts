@@ -8,7 +8,7 @@ import { pool } from '../../content/prs';
 import { config } from '../../shared/config';
 import { BUG_TYPES, type GameEvent } from '../../shared/types';
 import { createRng, type Rng } from '../../server/engine/rng';
-import { startQuarter } from '../../server/engine/setup';
+import { replanUpcoming, startQuarter } from '../../server/engine/setup';
 import { applyIntent } from '../../server/engine/apply-intent';
 import { tick } from '../../server/engine/tick';
 import { toPublicState } from '../../server/engine/projection';
@@ -43,8 +43,20 @@ interface Run {
   bonuses: number;
 }
 
+/** A change in the number of players `at` ms into the quarter, as the room layer would re-plan it. */
+interface PlayerChange {
+  at: number;
+  players: number;
+}
+
 /** Plays a quarter in 250 ms ticks. `skill` is the chance a bot spots a bug and declines it. */
-function play(seed: number, playerCount: number, skill: number, mergeRate: number): Run {
+function play(
+  seed: number,
+  playerCount: number,
+  skill: number,
+  mergeRate: number,
+  changes: readonly PlayerChange[] = [],
+): Run {
   const rng: Rng = createRng(seed);
   const bot = createRng(seed + 1);
   let state = startQuarter(lobby(playerCount), pool, rng, T0);
@@ -61,7 +73,12 @@ function play(seed: number, playerCount: number, skill: number, mergeRate: numbe
     for (const e of result.events) if (e.kind === 'catch') bonuses += e.bonus;
   };
 
+  const pending = [...changes];
   for (; state.phase === 'playing'; now += config.tickMs) {
+    while (pending[0] !== undefined && T0 + pending[0].at <= now && state.quarter !== null) {
+      const change = pending.shift() as PlayerChange;
+      state = { ...state, quarter: replanUpcoming(state.quarter, pool, change.players, rng, now) };
+    }
     const ticked = tick(state, now, rng);
     state = ticked.state;
     events.push(...ticked.events);
@@ -94,12 +111,26 @@ const CASES = [
   { seed: 4, players: 4, skill: 0, mergeRate: 1 },
   { seed: 5, players: 2, skill: 0, mergeRate: 0 },
   { seed: 6, players: 4, skill: 0.5, mergeRate: 0.5 },
+  { seed: 7, players: 2, skill: 0.5, mergeRate: 0.7, changes: [{ at: 120_000, players: 4 }] },
+  { seed: 8, players: 4, skill: 0.5, mergeRate: 0.7, changes: [{ at: 90_000, players: 1 }] },
+  {
+    seed: 9,
+    players: 1,
+    skill: 0.3,
+    mergeRate: 0.8,
+    changes: [
+      { at: 60_000, players: 3 },
+      { at: 200_000, players: 2 },
+      { at: 400_000, players: 8 },
+    ],
+  },
 ];
 
 describe('full-game simulation on the real pool', () => {
   for (const c of CASES) {
-    describe(`seed ${c.seed}, ${c.players} players, skill ${c.skill}`, () => {
-      const run = play(c.seed, c.players, c.skill, c.mergeRate);
+    const label = c.changes ? ` → ${c.changes.map((x) => x.players).join(' → ')}` : '';
+    describe(`seed ${c.seed}, ${c.players}${label} players, skill ${c.skill}`, () => {
+      const run = play(c.seed, c.players, c.skill, c.mergeRate, c.changes);
       const quarter = run.final.quarter;
 
       it('ends the quarter with no incident left waiting and the value never below $0', () => {
@@ -179,6 +210,16 @@ describe('full-game simulation on the real pool', () => {
       });
     });
   }
+
+  it('spawns PRs closer together after players join mid-quarter', () => {
+    const run = play(12, 2, 0.5, 0.7, [{ at: 180_000, players: 6 }]);
+    const spawns = [...(run.final.quarter?.prs.values() ?? [])].map((p) => p.spawnAt - T0);
+    const gaps = (from: number, to: number) => {
+      const times = spawns.filter((t) => t >= from && t < to);
+      return (times[times.length - 1]! - times[0]!) / (times.length - 1);
+    };
+    expect(gaps(180_000, config.spawnWindowMs)).toBeLessThan(gaps(0, 180_000));
+  });
 
   it('is deterministic: the same seed replays the same game', () => {
     const a = play(11, 3, 0.5, 0.6);

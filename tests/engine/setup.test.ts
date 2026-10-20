@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Bug, BugType, PullRequest } from '../../shared/types';
 import { config } from '../../shared/config';
-import { createQuarter, startQuarter } from '../../server/engine/setup';
+import { createQuarter, prCountFor, replanUpcoming, startQuarter } from '../../server/engine/setup';
 import { createRng } from '../../server/engine/rng';
 import { defaultTiming, type GameState, type Quarter } from '../../server/engine/state';
+import { tick } from '../../server/engine/tick';
 
 // A fake clock: the engine never reads the wall clock, so every test passes a fixed `now`.
 const NOW = 1_700_000_000_000;
@@ -267,5 +268,179 @@ describe('startQuarter', () => {
     expect(allPrs(next.quarter as Quarter)).toHaveLength(28);
     expect(next.players).toBe(lobby.players);
     expect(lobby.quarter).toBeNull();
+  });
+});
+
+/** Runs the real engine clock on a quarter up to `at`, so PRs spawn the way they do in play. */
+function playUntil(quarter: Quarter, at: number, seed = 99): Quarter {
+  const state: GameState = {
+    code: 'KZQX',
+    companyName: 'Acme',
+    hostId: 'p1',
+    players: [],
+    phase: 'playing',
+    quarter,
+  };
+  const next = tick(state, at, createRng(seed)).state.quarter;
+  if (next === null) throw new Error('no quarter');
+  return next;
+}
+
+function windowEnd(quarter: Quarter): number {
+  return quarter.startedAt + quarter.timing.spawnWindowMs;
+}
+
+describe('replanUpcoming', () => {
+  it('grows the quarter to the new player count when players join', () => {
+    const now = NOW + 180_000;
+    const before = playUntil(setupFor(2, 1), now);
+    const after = replanUpcoming(before, fullPool(), 4, createRng(2), now);
+    expect(allPrs(after)).toHaveLength(prCountFor(4));
+  });
+
+  it('spawns the remaining PRs faster after players join', () => {
+    const now = NOW + 180_000;
+    const before = playUntil(setupFor(2, 1), now);
+    const after = replanUpcoming(before, fullPool(), 4, createRng(2), now);
+    const gap = (q: Quarter) => (windowEnd(q) - now) / q.upcoming.length;
+    expect(gap(after)).toBeLessThan(gap(before));
+  });
+
+  it('never draws a PR twice', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const now = NOW + 120_000;
+      const before = playUntil(setupFor(1, seed), now);
+      const after = replanUpcoming(before, fullPool(), 8, createRng(seed), now);
+      const ids = allPrs(after).map((p) => p.id);
+      expect(new Set(ids).size).toBe(ids.length);
+    }
+  });
+
+  it('schedules every remaining PR after now, inside the window, in ascending order', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const now = NOW + 200_000;
+      const before = playUntil(setupFor(2, seed), now);
+      const after = replanUpcoming(before, fullPool(), 6, createRng(seed), now);
+      const times = after.upcoming.map((u) => u.spawnAt);
+      for (const [i, t] of times.entries()) {
+        expect(t).toBeGreaterThan(now);
+        expect(t).toBeLessThanOrEqual(windowEnd(after));
+        if (i > 0) expect(t).toBeGreaterThan(times[i - 1] as number);
+      }
+    }
+  });
+
+  it('leaves the PRs that already spawned alone', () => {
+    const now = NOW + 180_000;
+    const before = playUntil(setupFor(2, 1), now);
+    expect(before.prs.size).toBeGreaterThan(0);
+    const after = replanUpcoming(before, fullPool(), 4, createRng(2), now);
+    expect(after.prs).toBe(before.prs);
+  });
+
+  it('keeps about a third of the PRs clean when it draws more', () => {
+    const now = NOW + 60_000;
+    const before = playUntil(setupFor(1, 3), now);
+    const after = replanUpcoming(before, fullPool(), 5, createRng(3), now);
+    const total = allPrs(after);
+    const clean = total.filter((p) => p.bug === null).length;
+    expect(clean).toBe(Math.round(total.length * config.cleanShare));
+  });
+
+  it('shrinks the quarter to the new player count when players leave', () => {
+    const now = NOW + 60_000;
+    const before = playUntil(setupFor(5, 1), now);
+    const after = replanUpcoming(before, fullPool(), 2, createRng(2), now);
+    expect(allPrs(after)).toHaveLength(prCountFor(2));
+  });
+
+  it('spawns the remaining PRs slower after players leave', () => {
+    const now = NOW + 60_000;
+    const before = playUntil(setupFor(5, 1), now);
+    const after = replanUpcoming(before, fullPool(), 2, createRng(2), now);
+    const gap = (q: Quarter) => (windowEnd(q) - now) / q.upcoming.length;
+    expect(gap(after)).toBeGreaterThan(gap(before));
+  });
+
+  it('never drops below the PRs that already spawned', () => {
+    const now = NOW + 400_000;
+    const before = playUntil(setupFor(6, 1), now);
+    expect(before.prs.size).toBeGreaterThan(prCountFor(1));
+    const after = replanUpcoming(before, fullPool(), 1, createRng(2), now);
+    expect(after.upcoming).toHaveLength(0);
+    expect(after.prs.size).toBe(before.prs.size);
+  });
+
+  it('reaches the smaller count whichever PRs have already spawned', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      for (const elapsed of [30_000, 90_000, 150_000]) {
+        const now = NOW + elapsed;
+        const before = playUntil(setupFor(6, seed), now, seed);
+        const after = replanUpcoming(before, fullPool(), 1, createRng(seed), now);
+        expect(allPrs(after)).toHaveLength(Math.max(before.prs.size, prCountFor(1)));
+      }
+    }
+  });
+
+  it('drops surplus clean PRs first, so a smaller game is not mostly clean', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const before = setupFor(5, seed);
+      const after = replanUpcoming(before, fullPool(), 2, createRng(seed), NOW + 1_000);
+      const clean = allPrs(after).filter((p) => p.bug === null).length;
+      expect(clean).toBeLessThanOrEqual(Math.round(prCountFor(2) * config.cleanShare));
+    }
+  });
+
+  it('keeps at least one PR of each bug type when it shrinks', () => {
+    for (let seed = 0; seed < 50; seed++) {
+      const now = NOW + 30_000;
+      const before = playUntil(setupFor(6, seed), now);
+      const after = replanUpcoming(before, fullPool(), 1, createRng(seed), now);
+      const types = new Set(allPrs(after).map((p) => p.bug?.type));
+      for (const type of ['money', 'security', 'outage'] as const) expect(types).toContain(type);
+    }
+  });
+
+  it('changes nothing once the spawn window has closed', () => {
+    const before = setupFor(2, 1);
+    const now = windowEnd(before) + 1;
+    expect(replanUpcoming(before, fullPool(), 6, createRng(2), now)).toBe(before);
+  });
+
+  it('changes nothing when the PR count would stay the same', () => {
+    const now = NOW + 60_000;
+    const before = playUntil(setupFor(6, 1), now);
+    expect(replanUpcoming(before, fullPool(), 8, createRng(2), now)).toBe(before);
+  });
+
+  it('uses the game length the quarter was started with', () => {
+    const state: GameState = {
+      code: 'KZQX',
+      companyName: 'Acme',
+      hostId: 'p1',
+      players: [{ id: 'p1', name: 'Sara', joinedAt: NOW, connected: true }],
+      phase: 'lobby',
+      quarter: null,
+    };
+    const started = startQuarter(state, fullPool(), createRng(1), NOW, defaultTiming(), 5);
+    const quarter = started.quarter as Quarter;
+    const after = replanUpcoming(quarter, fullPool(), 4, createRng(2), NOW + 10_000);
+    expect(allPrs(after)).toHaveLength(prCountFor(4, 5));
+  });
+
+  it('adds what the pool still has rather than failing when it runs short', () => {
+    // 9 clean, 7 money, 1 security, 1 outage: 18 PRs, too few for 4 players (24).
+    const small = fullPool().filter((p) => p.id < 't-2' || p.id === 't-2-01' || p.id === 't-3-01');
+    const before = createQuarter(small, 1, createRng(1), NOW);
+    const after = replanUpcoming(before, small, 4, createRng(2), NOW + 10_000);
+    expect(allPrs(after)).toHaveLength(small.length);
+  });
+
+  it('replays the same plan for the same seed', () => {
+    const now = NOW + 90_000;
+    const before = playUntil(setupFor(2, 7), now);
+    const a = replanUpcoming(before, fullPool(), 5, createRng(11), now);
+    const b = replanUpcoming(before, fullPool(), 5, createRng(11), now);
+    expect(a.upcoming).toEqual(b.upcoming);
   });
 });

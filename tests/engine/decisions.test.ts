@@ -69,6 +69,7 @@ function gameWith(
 ): GameState {
   const quarter: Quarter = {
     timing: defaultTiming(),
+    minutes: config.durationMinutes.default,
     startedAt: NOW - 60_000,
     endsAt: NOW + 540_000,
     upcoming: [],

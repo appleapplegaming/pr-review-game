@@ -90,6 +90,8 @@ export interface Metrics {
 
 export interface Quarter {
   timing: Timing;
+  /** Game length in minutes, as picked at the start. Re-planning scales the PR count by it. */
+  minutes: number;
   startedAt: number;
   endsAt: number;
   upcoming: ScheduledPr[];

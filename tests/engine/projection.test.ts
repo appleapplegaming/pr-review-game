@@ -83,6 +83,7 @@ function quarterWith(
 ): Quarter {
   return {
     timing: defaultTiming(),
+    minutes: config.durationMinutes.default,
     startedAt: NOW,
     endsAt: NOW + config.quarterMs,
     upcoming,
