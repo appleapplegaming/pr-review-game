@@ -47,6 +47,7 @@ A browser-based co-op game for our engineering team to play together on a call. 
 | Quarter length | 10:00 real time |
 | PRs per quarter | `clamp(8 + 4 × players, 12, 30)`, drawn at random from the pool |
 | Spawn schedule | Evenly spaced over the first 8:30 of the quarter, with ±20% jitter |
+| Players joining or leaving | The PRs still to spawn are re-planned for the new player count and spaced over what is left of the 8:30, so PRs come faster with more players and slower with fewer. A disconnected player still counts for 20 s, so a reload changes nothing. PRs already in the queue are never touched |
 | Per-PR timer | 90 s from spawn, then the PR **auto-merges** |
 | Mix in each draw | About ⅓ clean and ⅔ buggy, with at least one of each bug type |
 

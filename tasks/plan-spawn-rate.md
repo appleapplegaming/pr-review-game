@@ -23,64 +23,64 @@ Rates today (10-minute game): 1 player 12 PRs (~43 s apart), 2 → 16 (~32 s), 3
 
 ### Phase 1: Engine
 
-- [ ] **Task 1: `replanUpcoming` in the engine** (M)
+- [x] **Task 1: `replanUpcoming` in the engine** (M)
   - Add `minutes` to `Quarter` and set it in `createQuarter`. Pull the even-spacing code out of `createQuarter` so both functions share it.
   - Implement grow, shrink and re-space as described above. Same player count and same window → `upcoming` is the same length and still sorted.
   - Acceptance:
-    - [ ] Growing from 2 to 4 players at 3:00 gives a quarter total of `prCountFor(4)`, every new `spawnAt` is in `[now, window end]` and in ascending order, and nothing is drawn twice.
-    - [ ] Shrinking keeps at least one PR of each bug type over spawned plus upcoming PRs, and never touches `quarter.prs`.
-    - [ ] Calling it after the window has closed, or when the cap is already reached, returns the quarter unchanged.
+    - [x] Growing from 2 to 4 players at 3:00 gives a quarter total of `prCountFor(4)`, every new `spawnAt` is in `[now, window end]` and in ascending order, and nothing is drawn twice.
+    - [x] Shrinking keeps at least one PR of each bug type over spawned plus upcoming PRs, and never touches `quarter.prs`.
+    - [x] Calling it after the window has closed, or when the cap is already reached, returns the quarter unchanged.
   - Verify: `npx vitest run tests/engine/setup.test.ts`; engine coverage stays ≥ 90%.
   - Files: `server/engine/setup.ts`, `server/engine/state.ts`, `tests/engine/setup.test.ts`.
   - Deps: none.
 
-- [ ] **Task 2: Simulation check** (S)
+- [x] **Task 2: Simulation check** (S)
   - Add a seeded simulation where players join at 2:00 and 4:00. Check that the gap between spawns gets smaller and that the quarter still ends on time and passes the postmortem invariants.
   - Verify: `npx vitest run tests/engine/simulation.test.ts`.
   - Files: `tests/engine/simulation.test.ts`.
   - Deps: 1.
 
 ### Checkpoint A
-- [ ] `npm run typecheck && npm run lint && npm test` pass.
+- [x] `npm run typecheck && npm run lint && npm test` pass.
 - [ ] Human review of the grow and shrink rules before wiring them into rooms.
 
 ### Phase 2: Rooms
 
-- [ ] **Task 3: Re-plan on join** (S)
+- [x] **Task 3: Re-plan on join** (S)
   - In `server/rooms.ts`, when a new or returning player connects during `phase === 'playing'` and the connected count goes up, call `replanUpcoming` with `room.rng` and `clock.now()`.
   - Acceptance:
-    - [ ] Integration test: start with 2 players, join a third mid-quarter, and the next broadcast `totalPrs` goes up.
-    - [ ] The no-leak test still passes.
+    - [x] Integration test: start with 2 players, join a third mid-quarter, and the next broadcast `totalPrs` goes up.
+    - [x] The no-leak test still passes.
   - Files: `server/rooms.ts`, `tests/rooms.test.ts` (or the existing rooms/protocol test file).
   - Deps: 1.
 
-- [ ] **Task 4: Re-plan on leave, with a grace period** (M)
+- [x] **Task 4: Re-plan on leave, with a grace period** (M)
   - Add `config.leaveGraceMs`. On disconnect, record when it happened. In the room `tick`, once a player has been gone longer than the grace period, re-plan for the lower count. A reconnect within the grace period cancels it.
   - Acceptance:
-    - [ ] Disconnect then reconnect within the grace period → `upcoming` is not changed.
-    - [ ] Disconnect for longer than the grace period → the total drops to `prCountFor(n − 1)` (or to the number already spawned, if that is higher).
+    - [x] Disconnect then reconnect within the grace period → `upcoming` is not changed.
+    - [x] Disconnect for longer than the grace period → the total drops to `prCountFor(n − 1)` (or to the number already spawned, if that is higher).
   - Files: `shared/config.ts`, `server/rooms.ts`, `server/engine/state.ts` (if the timestamp lives on `ServerPlayer`), rooms tests.
   - Deps: 3.
 
 ### Checkpoint B
-- [ ] All tests pass. `npm run build` is clean.
+- [x] All tests pass. `npm run build` is clean.
 - [ ] Two browsers on `npm run dev` (with `SHIP_IT_TIME_SCALE` to speed things up): a third joins mid-quarter, and the queue fills faster.
 
 ### Phase 3: Client and docs
 
-- [ ] **Task 5: Client handles a changing `totalPrs`** (S)
+- [x] **Task 5: Client handles a changing `totalPrs`** (S): nothing to change; the client never reads `totalPrs`.
   - Check every place `totalPrs` is shown (dashboard / progress). It must not assume the value is fixed, and a drop must never show "N of M" with N > M. Optionally add a feed or toast entry such as "New teammate: PRs speeding up".
   - Verify: `npm test`; `npm run test:e2e` if the dashboard markup changes.
   - Files: `client/src/game/*`, `tests/client/*`.
   - Deps: 3.
 
-- [ ] **Task 6: SPEC and docs** (XS)
-  - SPEC → Game Rules → Quarter: say the PR count and spawn schedule follow the connected player count during the quarter, with the leave grace period. Fix the stale "30-PR pool" in `CLAUDE.md` (the pool now has 52).
+- [x] **Task 6: SPEC and docs** (XS)
+  - SPEC → Game Rules → Quarter: say the PR count and spawn schedule follow the connected player count during the quarter, with the leave grace period. Fix the stale "30-PR pool" in `CLAUDE.md` (the pool has 46: 30 TypeScript, 8 Java, 8 Python).
   - Files: `SPEC.md`, `CLAUDE.md`, `docs/handoff.md`.
   - Deps: 4.
 
 ### Checkpoint C: Complete
-- [ ] Typecheck, lint, unit and e2e tests pass. Engine coverage ≥ 90%.
+- [x] Typecheck, lint, unit and e2e tests pass. Engine coverage ≥ 90%.
 - [ ] Ready for review.
 
 ## Risks and Mitigations
