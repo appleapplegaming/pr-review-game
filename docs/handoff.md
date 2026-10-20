@@ -21,6 +21,7 @@ All 29 tasks except the human-only items below are implemented on this branch: s
 
 ## Known gaps and judgment calls for a human
 - A bankrupt game can still show an uptime badge, as SPEC allows.
+- The spawn rate follows the live player count: `replanUpcoming` (engine) re-plans the PRs still to spawn when players join, or after a player has been gone for `leaveGraceMs` (rooms). Plan: `tasks/plan-spawn-rate.md`.
 - There is no room player cap: the protocol has no `ROOM_FULL` error, so the 2-8 players range is a design target, not enforced.
 - The Docker image was not built in the sandbox (proxy TLS). The Dockerfile is untested.
 - The e2e merged-by and auto-merged assertions depend on the random bug mix (about 0.02% flake). A test-only seed was not added: room codes, company names and room seeds share one `random` source, and two parallel specs create rooms in a racy order, so a seed would not make the mix deterministic without refactoring `rooms.ts`.

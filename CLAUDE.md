@@ -19,7 +19,7 @@ Browser co-op PR review game: players share one fictional company for a quarter,
 - `shared/`: types, `config.ts` (all balance numbers), protocol, diff parser, used by both sides
 - `server/engine/`: pure game engine (no I/O); `server/`: HTTP/WS server, room registry
 - `client/src/`: views (`landing`, `lobby`, `game`, `postmortem`), `net/socket.ts`, CSS modules, `styles/global.css`
-- `content/`: 30-PR seed pool (9/7/7/7 mix, checked by content tests)
+- `content/`: 46-PR seed pool (30 TypeScript at a 9/7/7/7 mix, plus 8 Java and 8 Python; checked by content tests)
 - `tests/{client,engine,...}`, `e2e/`
 
 ## Conventions

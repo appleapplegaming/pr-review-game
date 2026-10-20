@@ -135,6 +135,7 @@ function game(
 ): GameState {
   const q: Quarter = {
     timing: defaultTiming(),
+    minutes: config.durationMinutes.default,
     startedAt: NOW,
     endsAt: NOW + config.quarterMs,
     upcoming: [],
