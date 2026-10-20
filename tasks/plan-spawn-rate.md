@@ -15,7 +15,7 @@ Rates today (10-minute game): 1 player 12 PRs (~43 s apart), 2 → 16 (~32 s), 3
 - **Target = `prCountFor(players, minutes)` total for the quarter.** Remaining to spawn = `max(0, target − spawned)`. When it grows, extra PRs are drawn from pool PRs not yet used this quarter, keeping about a third clean. When it shrinks, PRs are dropped from `upcoming`, never one that is the last of its bug type, so the "at least one of each bug type" rule still holds.
 - **Re-space evenly over what is left of the window.** Remaining PRs get equal slots over `[now, startedAt + spawnWindowMs]`, with the same ±`spawnJitter`. If the window has already closed, the call does nothing.
 - **Game length goes on `Quarter`.** Store `minutes` (engine-internal `state.ts`, not `shared/types.ts`), so the re-plan uses the same scaling as the start.
-- **Who counts:** connected players. A join counts at once. A leave counts only after `config.leaveGraceMs` (proposed 20 s), so a page reload or a phone blip doesn't drop PRs and then draw new ones.
+- **Who counts:** connected players. A join counts at once. A leave counts only after `config.leaveGraceMs` (20 s), so a page reload or a phone blip doesn't drop PRs and then draw new ones.
 - **Config only in `shared/config.ts`:** `leaveGraceMs`. The `prCount` curve stays as it is.
 - **No protocol change.** `totalPrs` in the projection just changes value mid-quarter. No answer key is exposed: upcoming PRs are already hidden.
 
@@ -90,11 +90,11 @@ Rates today (10-minute game): 1 player 12 PRs (~43 s apart), 2 → 16 (~32 s), 3
 | Re-plan bunches spawns right after a join (a burst) | Med | Re-space from `now` with full slots. The first new spawn is at least half a slot away. |
 | Reload churn swaps upcoming PRs | Low | Leave grace period; join and leave are not symmetric. |
 | Breaking the bug-type guarantee when shrinking | Med | Never drop the last PR of a type. Tested over many seeds. |
-| 6+ players are already at the 30 cap, so joins beyond 5 do nothing | Low | Expected. Raising `prCount.max` (the pool has 52) is a separate balance call. |
+| 6+ players are already at the 30 cap, so joins beyond 5 do nothing | Low | Accepted: the cap stays at 30. |
 | A bigger draw runs out of clean PRs | Low | The existing draw already caps the clean share at what the pool has. Reuse that rule. |
 
-## Open Questions
+## Decisions (resolved with the user)
 
-- Should leaving slow the game down at all, or should the rate only ever go up during a quarter? Going up only would drop Task 4.
-- Is 20 s right for `leaveGraceMs`?
-- Raise `prCount.max` above 30 now that the pool has 52 PRs, so 6–8 player games also speed up?
+- Leaving slows the game down: Task 4 stays in.
+- `leaveGraceMs` is 20 s (`20_000`).
+- `prCount.max` stays at 30, so joins beyond 5 players don't change the rate.
