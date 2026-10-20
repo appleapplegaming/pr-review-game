@@ -645,3 +645,73 @@ describe('intents and the clock', () => {
     expect(rooms.view('ZZZZ')).toBeNull();
   });
 });
+
+describe('player count during a quarter', () => {
+  /** A started 2-player room, 1:00 into the quarter. */
+  function twoPlayerQuarter() {
+    const { rooms, clock } = setup();
+    const host = rooms.create('Sara');
+    if (!host.ok) throw new Error('create failed');
+    const guest = rooms.join(host.code, 'Omar');
+    if (!guest.ok) throw new Error('join failed');
+    rooms.start(host.code, host.playerId);
+    clock.advance(60_000);
+    rooms.tick(host.code);
+    return { rooms, clock, host, guest };
+  }
+
+  const totalPrs = (rooms: Rooms, code: string) => rooms.view(code)?.totalPrs;
+
+  it('draws more PRs as soon as a player joins mid-quarter', () => {
+    const { rooms, host } = twoPlayerQuarter();
+    expect(totalPrs(rooms, host.code)).toBe(16);
+    const late = rooms.join(host.code, 'Lena');
+    expect(late.ok && late.state.totalPrs).toBe(20);
+  });
+
+  it('keeps the PRs when a player drops and rejoins within the grace period', () => {
+    const { rooms, clock, host, guest } = twoPlayerQuarter();
+    rooms.disconnect(host.code, guest.playerId);
+    clock.advance(config.leaveGraceMs - 1_000);
+    rooms.tick(host.code);
+    rooms.join(host.code, 'Omar', guest.playerId);
+    clock.advance(config.leaveGraceMs);
+    rooms.tick(host.code);
+    expect(totalPrs(rooms, host.code)).toBe(16);
+  });
+
+  it('waits out the grace period before counting a player as gone', () => {
+    const { rooms, clock, host, guest } = twoPlayerQuarter();
+    rooms.disconnect(host.code, guest.playerId);
+    clock.advance(config.leaveGraceMs - 1);
+    rooms.tick(host.code);
+    expect(totalPrs(rooms, host.code)).toBe(16);
+  });
+
+  it('draws fewer PRs once a player has been gone longer than the grace period', () => {
+    const { rooms, clock, host, guest } = twoPlayerQuarter();
+    rooms.disconnect(host.code, guest.playerId);
+    clock.advance(config.leaveGraceMs);
+    const result = rooms.tick(host.code);
+    expect(result.ok && result.changed).toBe(true);
+    expect(result.ok && result.state.totalPrs).toBe(12);
+  });
+
+  it('changes nothing once the spawn window has closed', () => {
+    const { rooms, clock, host } = twoPlayerQuarter();
+    clock.advance(config.spawnWindowMs);
+    rooms.tick(host.code);
+    rooms.join(host.code, 'Lena');
+    expect(totalPrs(rooms, host.code)).toBe(16);
+  });
+
+  it('starts the next quarter from the players in the room, not the last re-plan', () => {
+    const { rooms, clock, host } = twoPlayerQuarter();
+    rooms.join(host.code, 'Lena');
+    clock.advance(config.quarterMs);
+    rooms.tick(host.code);
+    rooms.playAgain(host.code, host.playerId);
+    rooms.start(host.code, host.playerId);
+    expect(totalPrs(rooms, host.code)).toBe(20);
+  });
+});

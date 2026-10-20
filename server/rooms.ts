@@ -18,7 +18,7 @@ import type { Intent } from '../shared/protocol';
 import { config } from '../shared/config';
 import { applyIntent } from './engine/apply-intent';
 import { createRng, type Rng } from './engine/rng';
-import { startQuarter } from './engine/setup';
+import { replanUpcoming, startQuarter } from './engine/setup';
 import { tick as engineTick } from './engine/tick';
 import { toPublicState } from './engine/projection';
 import { postmortem as buildPostmortem } from './engine/postmortem';
@@ -107,6 +107,10 @@ interface Room {
   rng: Rng;
   /** The pending cleanup timer, or null while someone is connected. */
   cleanup: number | null;
+  /** How many players the running quarter's PRs are planned for. */
+  plannedFor: number;
+  /** When each disconnected player left. They still count until config.leaveGraceMs has passed. */
+  leftAt: Map<string, number>;
 }
 
 /** A random code of the configured length, drawn from CODE_ALPHABET. */
@@ -201,6 +205,27 @@ export function createRooms(options: RoomsOptions): Rooms {
     }, config.roomCleanupMs);
   }
 
+  /**
+   * Re-plans the quarter's PRs still to spawn when the number of active players has changed.
+   * Active means connected, or gone for less than config.leaveGraceMs. Returns true if it did.
+   */
+  function replanForPlayers(room: Room): boolean {
+    const now = clock.now();
+    for (const [id, at] of room.leftAt) {
+      if (now - at >= config.leaveGraceMs) room.leftAt.delete(id);
+    }
+    const active = room.state.players.filter((p) => p.connected || room.leftAt.has(p.id)).length;
+    const { quarter } = room.state;
+    if (room.state.phase !== 'playing' || quarter === null || active === room.plannedFor) {
+      return false;
+    }
+    room.plannedFor = active;
+    const replanned = replanUpcoming(quarter, pool, active, room.rng, now);
+    if (replanned === quarter) return false;
+    room.state = { ...room.state, quarter: replanned };
+    return true;
+  }
+
   function create(rawName: string): JoinResult {
     const name = cleanText(rawName, config.name.min, config.name.max);
     if (name === null) return fail('INVALID_NAME', 'Names must be 1 to 20 characters');
@@ -219,6 +244,8 @@ export function createRooms(options: RoomsOptions): Rooms {
       },
       rng: createRng(options.roomSeed ?? Math.floor(random() * 2 ** 32)),
       cleanup: null,
+      plannedFor: 0,
+      leftAt: new Map(),
     };
     rooms.set(code, room);
     return { ok: true, code, playerId, state: toPublicState(room.state) };
@@ -251,7 +278,9 @@ export function createRooms(options: RoomsOptions): Rooms {
         ],
       };
     }
+    room.leftAt.delete(seatId);
     cancelCleanup(room);
+    replanForPlayers(room);
     return { ok: true, code: room.code, playerId: seatId, state: toPublicState(room.state) };
   }
 
@@ -265,6 +294,7 @@ export function createRooms(options: RoomsOptions): Rooms {
       ...room.state,
       players: room.state.players.map((p) => (p.id === playerId ? { ...p, connected: false } : p)),
     };
+    room.leftAt.set(playerId, clock.now());
 
     // Host handover: the longest-connected player takes over. If nobody else is connected, the
     // host seat stays put, so the host gets it back on rejoin.
@@ -288,6 +318,7 @@ export function createRooms(options: RoomsOptions): Rooms {
       return fail('INVALID_DURATION', `Game length must be ${offered.join(', ')} minutes`);
     }
     room.state = startQuarter(room.state, pool, room.rng, clock.now(), timing, minutes);
+    room.plannedFor = room.state.players.length;
     return done(room);
   }
 
@@ -348,7 +379,8 @@ export function createRooms(options: RoomsOptions): Rooms {
     const room = findRoom(rawCode);
     if (room === null) return fail('ROOM_NOT_FOUND', 'No room has that code');
     const { events, changed } = advance(room);
-    return { ...done(room, events), changed };
+    const replanned = replanForPlayers(room);
+    return { ...done(room, events), changed: changed || replanned };
   }
 
   function view(rawCode: string): PublicRoomState | null {

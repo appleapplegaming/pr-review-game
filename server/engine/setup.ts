@@ -110,7 +110,7 @@ export function createQuarter(
  * the PRs already spawned. Extra PRs come from pool PRs not used this quarter, keeping about a
  * third clean; when the pool runs short it adds what it has. Dropped PRs are never the last of
  * their bug type. The remaining PRs are then spaced evenly over what is left of the spawn window.
- * Spawned PRs are not touched. Returns the quarter unchanged once the window has closed or when
+ * Spawned PRs, and PRs already due at `now`, are not touched. Returns the quarter unchanged once the window has closed or when
  * the number left to spawn would stay the same.
  */
 export function replanUpcoming(
@@ -123,10 +123,12 @@ export function replanUpcoming(
   const windowEnd = quarter.startedAt + quarter.timing.spawnWindowMs;
   if (now >= windowEnd) return quarter;
 
-  const spawned = [...quarter.prs.values()].map((p) => p.pr);
+  // PRs already due count as spawned: the next tick spawns them where they are.
+  const due = quarter.upcoming.filter((u) => u.spawnAt <= now);
+  const spawned = [...[...quarter.prs.values()].map((p) => p.pr), ...due.map((u) => u.pr)];
   const target = Math.max(spawned.length, prCountFor(playerCount, quarter.minutes));
   const wanted = target - spawned.length;
-  const current = quarter.upcoming.map((u) => u.pr);
+  const current = quarter.upcoming.filter((u) => u.spawnAt > now).map((u) => u.pr);
   if (wanted === current.length) return quarter;
 
   const all = [...spawned, ...current];
@@ -138,7 +140,7 @@ export function replanUpcoming(
 
   return {
     ...quarter,
-    upcoming: schedule(shuffle(rng, remaining), now, windowEnd - now, rng),
+    upcoming: [...due, ...schedule(shuffle(rng, remaining), now, windowEnd - now, rng)],
   };
 }
 

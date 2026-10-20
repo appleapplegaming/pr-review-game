@@ -401,6 +401,16 @@ describe('replanUpcoming', () => {
     }
   });
 
+  it('keeps PRs that are already due but not yet ticked in, so the next tick still spawns them', () => {
+    const before = setupFor(2, 1);
+    const due = before.upcoming.slice(0, 3);
+    const now = (due[2] as { spawnAt: number }).spawnAt;
+    const after = replanUpcoming(before, fullPool(), 6, createRng(2), now);
+    expect(after.upcoming.slice(0, 3)).toEqual(due);
+    expect(allPrs(after)).toHaveLength(prCountFor(6));
+    for (const u of after.upcoming.slice(3)) expect(u.spawnAt).toBeGreaterThan(now);
+  });
+
   it('changes nothing once the spawn window has closed', () => {
     const before = setupFor(2, 1);
     const now = windowEnd(before) + 1;

@@ -12,6 +12,7 @@ export const config = {
   // Game length the host can pick at start. quarterMs is the `default` length; the others scale it.
   durationMinutes: { options: [5, 10, 15], default: 10 },
   prCountFloor: 6, // a shortened game never draws fewer PRs than this (3 bug types + a clean one)
+  leaveGraceMs: 20_000, // a player gone this long mid-quarter stops counting, and PRs slow down
 
   // Starting state
   startingValue: 10_000_000,
